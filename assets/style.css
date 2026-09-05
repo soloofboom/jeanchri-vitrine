@@ -48,7 +48,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* Sur l'accueil, l'entête est transparente (comme l'original) :
-   le wallpaper fixe du body passe derrière le titre */
+   le wallpaper fixe du body passe derrière le titre,
+   et titre + tagline sont blancs (règle du thème : .dt-logo h1 a, .dt-logo p { color:#fff }) */
 body.accueil .site-header {
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -56,6 +57,15 @@ body.accueil .site-header {
   padding: 30px 11px 30px 30px;
   background: transparent;
 }
+
+body.accueil .site-title a,
+body.accueil .site-description {
+  color: #fff;
+}
+
+body.accueil .site-title { font-weight: 400; }
+
+body.accueil .site-title a:hover { color: #fff; }
 
 body.accueil .galerie { margin-top: 0; }
 
@@ -81,7 +91,7 @@ body.accueil .galerie { margin-top: 0; }
   top: 20px; right: 20px;
   width: 48px; height: 48px;
   background: #fff;
-  border: 2px solid rgba(74, 0, 99, .35);
+  border: 1px solid rgba(39, 48, 57, .35);
   cursor: pointer;
   z-index: 300;
   display: flex;
@@ -94,8 +104,8 @@ body.accueil .galerie { margin-top: 0; }
 .dt-menu-trigger span {
   display: block;
   width: 22px;
-  height: 2px;
-  background: var(--violet);
+  height: 3px;
+  background: #273039;
   transition: transform .25s, opacity .25s;
 }
 
