@@ -124,9 +124,11 @@ body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
 .dt-main-menu li a:hover { color: var(--accent); }
 
 /* ===== Galerie accueil ===== */
+/* Grille de tuiles carrées, 3 colonnes, bord à bord (comme le plugin WordPress) */
 .galerie {
-  columns: 3;
-  column-gap: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
 }
 
 body.accueil .galerie { margin-top: 88px; }
@@ -134,14 +136,15 @@ body.accueil .galerie { margin-top: 88px; }
 .galerie figure {
   position: relative;
   margin: 0;
-  break-inside: avoid;
 }
 
 .galerie a { display: block; }
 
 .galerie img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
 }
 
 .galerie figcaption {
@@ -322,11 +325,11 @@ body.accueil .galerie { margin-top: 88px; }
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
-  .galerie { columns: 2; }
+  .galerie { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 640px) {
-  .galerie { columns: 1; }
+  .galerie { grid-template-columns: 1fr; }
   .site-title { font-size: 21px; }
   .site-header { padding-left: 16px; height: 96px; }
   body.accueil .site-header { height: 74px; }
