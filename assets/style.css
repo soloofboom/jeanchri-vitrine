@@ -24,7 +24,13 @@ body {
   font-family: 'Roboto', Arial, sans-serif;
   color: var(--violet);
   letter-spacing: .06em;
-  background: #fff;
+  /* Wallpaper d'origine (WordPress custom-background) */
+  background-color: #0a0a0a;
+  background-image: url('../images/creation.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 a { color: var(--violet-lien); text-decoration: none; }
@@ -46,7 +52,7 @@ body.accueil .site-header {
   top: 0; left: 0; right: 0;
   height: 88px;
   padding: 14px 11px 14px 30px;
-  background: rgba(255, 255, 255, .95);
+  background: #fff;
 }
 
 .site-title {
@@ -171,11 +177,9 @@ body.accueil .galerie { margin-top: 88px; }
 }
 
 /* ===== Pages internes ===== */
+/* La bande sous l'entête est transparente : elle laisse voir le wallpaper fixe du body, comme l'original */
 .bandeau-page {
   height: 40px;
-  background-image: url('../images/creation.jpg');
-  background-size: cover;
-  background-position: center;
 }
 
 #dt_breadcrumbs {
@@ -196,10 +200,6 @@ body.accueil .galerie { margin-top: 88px; }
 #dt_breadcrumbs a:hover { color: var(--accent); }
 
 .zone-contenu {
-  background-image: url('../images/creation.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   padding: 90px 20px 110px;
 }
 
@@ -330,12 +330,14 @@ body.accueil .galerie { margin-top: 88px; }
 
 @media (max-width: 640px) {
   .galerie { grid-template-columns: 1fr; }
+  /* background-attachment: fixed est mal géré sur iOS */
+  body { background-attachment: scroll; }
   .site-title { font-size: 21px; }
   .site-header { padding-left: 16px; height: 96px; }
   body.accueil .site-header { height: 74px; }
   body.accueil .galerie { margin-top: 74px; }
   #dt_breadcrumbs { padding-left: 16px; }
-  .zone-contenu { background-attachment: scroll; padding: 50px 14px 70px; }
+  .zone-contenu { padding: 50px 14px 70px; }
   .carte-contenu { padding: 32px 24px 40px; }
   .entry-title { font-size: 27px; }
 }
