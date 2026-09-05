@@ -293,7 +293,8 @@ body.accueil .galerie { margin-top: 0; }
 }
 
 .dt-footer-social {
-  padding: 44px 0 6px;
+  /* 25 + 38 (icônes) + 25 = 88px : icônes centrées verticalement */
+  padding: 25px 0;
 }
 
 .dt-social-icons {
