@@ -1,0 +1,338 @@
+/* jeanchri.com — reproduction fidèle du thème Photobook
+   Palette extraite du site original :
+   - texte/logo principal : #4a0063
+   - liens : rgba(74,0,99,.6) — éléments secondaires rgba(74,0,99,.8)
+   - survol / accent : #5500e8
+   - overlay légendes galerie : rgba(85,0,175,.3)
+   - footer : rgba(39,48,57,.8) et barre rgba(39,48,57,.5) */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --violet: #4a0063;
+  --violet-lien: rgba(74, 0, 99, .6);
+  --violet-second: rgba(74, 0, 99, .8);
+  --accent: #5500e8;
+  --overlay: rgba(85, 0, 175, .3);
+  --footer-bg: rgba(39, 48, 57, .8);
+  --footer-bar: rgba(39, 48, 57, .5);
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  color: var(--violet);
+  letter-spacing: .06em;
+  background: #fff;
+}
+
+a { color: var(--violet-lien); text-decoration: none; }
+a:hover { color: var(--accent); }
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* ===== En-tête ===== */
+.site-header {
+  background: #fff;
+  height: 118px;
+  padding: 30px 11px 30px 30px;
+  position: relative;
+  z-index: 100;
+}
+
+body.accueil .site-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 88px;
+  padding: 14px 11px 14px 30px;
+  background: rgba(255, 255, 255, .95);
+}
+
+.site-title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.site-title a { color: var(--violet); }
+.site-title a:hover { color: var(--accent); }
+
+.site-description {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--violet-second);
+  margin-top: 2px;
+}
+
+/* ===== Menu (burger) ===== */
+.dt-menu-trigger {
+  position: fixed;
+  top: 20px; right: 20px;
+  width: 48px; height: 48px;
+  background: #fff;
+  border: 2px solid rgba(74, 0, 99, .35);
+  cursor: pointer;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dt-menu-trigger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--violet);
+  transition: transform .25s, opacity .25s;
+}
+
+.dt-menu-trigger:hover { border-color: var(--accent); }
+.dt-menu-trigger:hover span { background: var(--accent); }
+
+body.menu-ouvert .dt-menu-trigger span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+body.menu-ouvert .dt-menu-trigger span:nth-child(2) { opacity: 0; }
+body.menu-ouvert .dt-menu-trigger span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+.dt-main-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, .97);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s;
+}
+
+body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
+
+.dt-main-menu ul { list-style: none; text-align: center; }
+
+.dt-main-menu li { padding: 14px 0; }
+
+.dt-main-menu li a {
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--violet-second);
+}
+
+.dt-main-menu li a:hover { color: var(--accent); }
+
+/* ===== Galerie accueil ===== */
+.galerie {
+  columns: 3;
+  column-gap: 0;
+}
+
+body.accueil .galerie { margin-top: 88px; }
+
+.galerie figure {
+  position: relative;
+  margin: 0;
+  break-inside: avoid;
+}
+
+.galerie a { display: block; }
+
+.galerie img {
+  width: 100%;
+  height: auto;
+}
+
+.galerie figcaption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 12px 14px;
+  background: var(--overlay);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.galerie figure:hover figcaption,
+.galerie a:focus-visible figcaption,
+.galerie figure:focus-within figcaption {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .galerie figcaption { opacity: 1; }
+}
+
+/* ===== Pages internes ===== */
+.bandeau-page {
+  height: 40px;
+  background-image: url('../images/creation.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+#dt_breadcrumbs {
+  background: #fff;
+  padding: 20px 0 20px 160px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#dt_breadcrumbs li {
+  display: inline-block;
+  padding: 0 2px;
+  color: rgba(39, 48, 57, .85);
+  list-style: none;
+}
+
+#dt_breadcrumbs a { color: var(--violet-lien); }
+#dt_breadcrumbs a:hover { color: var(--accent); }
+
+.zone-contenu {
+  background-image: url('../images/creation.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 90px 20px 110px;
+}
+
+.carte-contenu {
+  max-width: 750px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 45px 48px 50px;
+}
+
+.entry-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--violet);
+  padding-bottom: 16px;
+  border-bottom: 3px solid var(--violet);
+  margin-bottom: 40px;
+}
+
+.carte-contenu p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--violet-second);
+  margin-bottom: 22px;
+}
+
+.carte-contenu p:last-child { margin-bottom: 0; }
+
+/* Citation (pullquote) — page Musique */
+.wp-block-pullquote {
+  border-left: 4px solid rgba(74, 0, 99, .2);
+  border-bottom: 3px solid var(--violet);
+  padding: 30px 10px 34px;
+  margin: 40px 0 44px;
+}
+
+.wp-block-pullquote blockquote { text-align: center; }
+
+.wp-block-pullquote p {
+  font-size: 20px;
+  color: var(--violet);
+  margin-bottom: 18px;
+}
+
+.wp-block-pullquote cite {
+  font-size: 13px;
+  font-style: normal;
+  text-transform: uppercase;
+  color: rgba(39, 48, 57, .7);
+}
+
+/* Vidéo 16/9 */
+.wp-block-embed__wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  margin: 34px 0;
+}
+
+.wp-block-embed__wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.message-vide {
+  font-size: 15px;
+  color: rgba(39, 48, 57, .7);
+}
+
+/* ===== Pied de page ===== */
+.dt-footer {
+  background: var(--footer-bg);
+}
+
+.dt-footer-social {
+  padding: 44px 0 6px;
+}
+
+.dt-social-icons {
+  list-style: none;
+  text-align: center;
+}
+
+.dt-social-icons li {
+  display: inline-block;
+  margin: 0 16px;
+}
+
+.dt-social-icons a {
+  display: inline-flex;
+  width: 38px; height: 38px;
+  border: 2px solid rgba(255, 255, 255, .55);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: border-color .3s, color .3s;
+}
+
+.dt-social-icons a:hover {
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.dt-social-icons svg {
+  width: 17px; height: 17px;
+  fill: currentColor;
+}
+
+.dt-footer-bar {
+  padding: 26px 20px 24px;
+  background: var(--footer-bar);
+  color: rgba(255, 255, 255, .9);
+  font-weight: 300;
+  font-size: 15px;
+  letter-spacing: .03em;
+  text-align: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .galerie { columns: 2; }
+}
+
+@media (max-width: 640px) {
+  .galerie { columns: 1; }
+  .site-title { font-size: 21px; }
+  .site-header { padding-left: 16px; height: 96px; }
+  body.accueil .site-header { height: 74px; }
+  body.accueil .galerie { margin-top: 74px; }
+  #dt_breadcrumbs { padding-left: 16px; }
+  .zone-contenu { background-attachment: scroll; padding: 50px 14px 70px; }
+  .carte-contenu { padding: 32px 24px 40px; }
+  .entry-title { font-size: 27px; }
+}

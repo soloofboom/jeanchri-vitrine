@@ -1,0 +1,14 @@
+{
+  "commentaire": "Éditez ce fichier pour gérer la galerie de la page d'accueil, puis lancez : python3 build-galerie.py",
+  "images": [
+    { "src": "images/creation.jpg",  "legende": "Création",   "lien": "jeanchri-musique/", "largeur": 1600, "hauteur": 1066, "externe": false },
+    { "src": "images/champis.jpg",   "legende": "Champis",    "lien": "images/champis.jpg",   "largeur": 1600, "hauteur": 1067, "externe": true },
+    { "src": "images/reve.jpg",      "legende": "Rêve",       "lien": "images/reve.jpg",      "largeur": 1600, "hauteur": 1067, "externe": true },
+    { "src": "images/fleuve.jpg",    "legende": "Fleuve",     "lien": "images/fleuve.jpg",    "largeur": 1600, "hauteur": 1067, "externe": true },
+    { "src": "images/mais-lune.jpg", "legende": "Maïs Lune",  "lien": "images/mais-lune.jpg", "largeur": 1600, "hauteur": 1067, "externe": true },
+    { "src": "images/nuages.jpg",    "legende": "Nuages",     "lien": "images/nuages.jpg",    "largeur": 1600, "hauteur": 1067, "externe": true },
+    { "src": "images/bateau.jpg",    "legende": "Bateau",     "lien": "images/bateau.jpg",    "largeur": 1600, "hauteur": 2400, "externe": true },
+    { "src": "images/feu.jpg",       "legende": "Feu",        "lien": "images/feu.jpg",       "largeur": 1600, "hauteur": 1066, "externe": true },
+    { "src": "images/vaisseau.jpg",  "legende": "Vaisseau",   "lien": "images/vaisseau.jpg",  "largeur": 1600, "hauteur": 1063, "externe": true }
+  ]
+}
