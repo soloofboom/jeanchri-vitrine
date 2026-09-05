@@ -16,13 +16,18 @@
   --overlay: rgba(85, 0, 175, .3);
   --footer-bg: rgba(39, 48, 57, .8);
   --footer-bar: rgba(39, 48, 57, .5);
+  /* thème sombre (2026-09-05, choix de l'utilisateur) */
+  --sombre: #273039;
+  --sombre-fonce: #1e262e;
+  --texte-clair: rgba(255, 255, 255, .88);
+  --texte-clair-2: rgba(255, 255, 255, .65);
 }
 
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   font-family: 'Roboto', Arial, sans-serif;
-  color: var(--violet);
+  color: var(--texte-clair);
   letter-spacing: .06em;
   /* Wallpaper d'origine (WordPress custom-background) */
   background-color: #0a0a0a;
@@ -40,7 +45,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* ===== En-tête ===== */
 .site-header {
-  background: #fff;
+  background: var(--sombre);
   height: 118px;
   padding: 30px 11px 30px 30px;
   position: relative;
@@ -58,14 +63,7 @@ body.accueil .site-header {
   background: transparent;
 }
 
-body.accueil .site-title a,
-body.accueil .site-description {
-  color: #fff;
-}
-
 body.accueil .site-title { font-weight: 400; }
-
-body.accueil .site-title a:hover { color: #fff; }
 
 body.accueil .galerie { margin-top: 0; }
 
@@ -75,13 +73,13 @@ body.accueil .galerie { margin-top: 0; }
   line-height: 1.2;
 }
 
-.site-title a { color: var(--violet); }
+.site-title a { color: #fff; }
 .site-title a:hover { color: var(--accent); }
 
 .site-description {
   font-size: 13px;
   font-weight: 500;
-  color: var(--violet-second);
+  color: var(--texte-clair-2);
   margin-top: 2px;
 }
 
@@ -119,7 +117,7 @@ body.menu-ouvert .dt-menu-trigger span:nth-child(3) { transform: translateY(-8px
 .dt-main-menu {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, .97);
+  background: rgba(20, 26, 32, .97);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -138,7 +136,7 @@ body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
 .dt-main-menu li a {
   font-size: 26px;
   font-weight: 500;
-  color: var(--violet-second);
+  color: var(--texte-clair);
 }
 
 .dt-main-menu li a:hover { color: var(--accent); }
@@ -197,7 +195,7 @@ body.accueil .galerie { margin-top: 0; }
 }
 
 #dt_breadcrumbs {
-  background: #fff;
+  background: var(--sombre-fonce);
   padding: 20px 0 20px 160px;
   font-size: 14px;
   font-weight: 500;
@@ -206,12 +204,12 @@ body.accueil .galerie { margin-top: 0; }
 #dt_breadcrumbs li {
   display: inline-block;
   padding: 0 2px;
-  color: rgba(39, 48, 57, .85);
+  color: var(--texte-clair);
   list-style: none;
 }
 
-#dt_breadcrumbs a { color: var(--violet-lien); }
-#dt_breadcrumbs a:hover { color: var(--accent); }
+#dt_breadcrumbs a { color: var(--texte-clair-2); }
+#dt_breadcrumbs a:hover { color: #fff; }
 
 .zone-contenu {
   padding: 90px 20px 110px;
@@ -220,32 +218,37 @@ body.accueil .galerie { margin-top: 0; }
 .carte-contenu {
   max-width: 750px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--sombre);
   padding: 45px 48px 50px;
 }
 
 .entry-title {
   font-size: 34px;
   font-weight: 700;
-  color: var(--violet);
+  color: #fff;
   padding-bottom: 16px;
-  border-bottom: 3px solid var(--violet);
+  border-bottom: 3px solid var(--accent);
   margin-bottom: 40px;
 }
 
 .carte-contenu p {
   font-size: 16px;
   line-height: 1.8;
-  color: var(--violet-second);
+  color: var(--texte-clair);
   margin-bottom: 22px;
 }
 
 .carte-contenu p:last-child { margin-bottom: 0; }
 
+.carte-contenu a { color: var(--texte-clair-2); }
+.carte-contenu a:hover { color: #fff; }
+
+.carte-contenu p:last-child { margin-bottom: 0; }
+
 /* Citation (pullquote) — page Musique */
 .wp-block-pullquote {
-  border-left: 4px solid rgba(74, 0, 99, .2);
-  border-bottom: 3px solid var(--violet);
+  border-left: 4px solid rgba(255, 255, 255, .25);
+  border-bottom: 3px solid var(--accent);
   padding: 30px 10px 34px;
   margin: 40px 0 44px;
 }
@@ -254,7 +257,7 @@ body.accueil .galerie { margin-top: 0; }
 
 .wp-block-pullquote p {
   font-size: 20px;
-  color: var(--violet);
+  color: #fff;
   margin-bottom: 18px;
 }
 
@@ -262,7 +265,7 @@ body.accueil .galerie { margin-top: 0; }
   font-size: 13px;
   font-style: normal;
   text-transform: uppercase;
-  color: rgba(39, 48, 57, .7);
+  color: var(--texte-clair-2);
 }
 
 /* Vidéo 16/9 */
@@ -284,7 +287,7 @@ body.accueil .galerie { margin-top: 0; }
 
 .message-vide {
   font-size: 15px;
-  color: rgba(39, 48, 57, .7);
+  color: var(--texte-clair-2);
 }
 
 /* ===== Pied de page ===== */
