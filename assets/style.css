@@ -47,13 +47,17 @@ img { max-width: 100%; height: auto; display: block; }
   z-index: 100;
 }
 
+/* Sur l'accueil, l'entête est transparente (comme l'original) :
+   le wallpaper fixe du body passe derrière le titre */
 body.accueil .site-header {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 88px;
-  padding: 14px 11px 14px 30px;
-  background: #fff;
+  height: 118px;
+  padding: 30px 11px 30px 30px;
+  background: transparent;
 }
+
+body.accueil .galerie { margin-top: 0; }
 
 .site-title {
   font-size: 28px;
@@ -137,7 +141,7 @@ body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
   gap: 0;
 }
 
-body.accueil .galerie { margin-top: 88px; }
+body.accueil .galerie { margin-top: 0; }
 
 .galerie figure {
   position: relative;
@@ -334,8 +338,8 @@ body.accueil .galerie { margin-top: 88px; }
   body { background-attachment: scroll; }
   .site-title { font-size: 21px; }
   .site-header { padding-left: 16px; height: 96px; }
-  body.accueil .site-header { height: 74px; }
-  body.accueil .galerie { margin-top: 74px; }
+  body.accueil .site-header { height: 96px; padding-top: 20px; }
+  body.accueil .galerie { margin-top: 0; }
   #dt_breadcrumbs { padding-left: 16px; }
   .zone-contenu { padding: 50px 14px 70px; }
   .carte-contenu { padding: 32px 24px 40px; }
