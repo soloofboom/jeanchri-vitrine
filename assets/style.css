@@ -44,23 +44,26 @@ a:hover { color: var(--accent); }
 img { max-width: 100%; height: auto; display: block; }
 
 /* ===== En-tête ===== */
+/* verre dépoli : translucide + flou, le wallpaper se devine sans gêner la lecture */
 .site-header {
-  background: var(--sombre);
+  background: rgba(30, 38, 46, .75);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   height: 118px;
   padding: 30px 11px 30px 30px;
   position: relative;
   z-index: 100;
 }
 
-/* Sur l'accueil, l'entête est transparente (comme l'original) :
-   le wallpaper fixe du body passe derrière le titre,
-   et titre + tagline sont blancs (règle du thème : .dt-logo h1 a, .dt-logo p { color:#fff }) */
+/* Sur l'accueil, voile léger : le wallpaper reste visible, le titre blanc reste lisible */
 body.accueil .site-header {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 118px;
   padding: 30px 11px 30px 30px;
-  background: transparent;
+  background: rgba(30, 38, 46, .4);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 body.accueil .site-title { font-weight: 400; }
@@ -117,7 +120,9 @@ body.menu-ouvert .dt-menu-trigger span:nth-child(3) { transform: translateY(-8px
 .dt-main-menu {
   position: fixed;
   inset: 0;
-  background: rgba(20, 26, 32, .97);
+  background: rgba(20, 26, 32, .88);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -195,7 +200,9 @@ body.accueil .galerie { margin-top: 0; }
 }
 
 #dt_breadcrumbs {
-  background: var(--sombre-fonce);
+  background: rgba(30, 38, 46, .65);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   padding: 20px 0 20px 160px;
   font-size: 14px;
   font-weight: 500;
@@ -218,7 +225,9 @@ body.accueil .galerie { margin-top: 0; }
 .carte-contenu {
   max-width: 750px;
   margin: 0 auto;
-  background: var(--sombre);
+  background: rgba(30, 38, 46, .82);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   padding: 45px 48px 50px;
 }
 
