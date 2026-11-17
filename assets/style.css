@@ -184,6 +184,48 @@ body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
 
 body.menu-ouvert { overflow: hidden; }
 
+/* entrée de sortie : l'alibi ai.jeanchri.com, autre site */
+.dt-main-menu li.menu-sortie {
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid var(--filet);
+}
+
+.dt-main-menu li.menu-sortie a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 15px 7px;
+  border: 1px solid var(--filet);
+  border-radius: 999px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .2em;
+  color: var(--texte-clair-2);
+  transition: color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe);
+}
+
+.dt-main-menu li.menu-sortie a::after { display: none; }
+
+.dt-main-menu li.menu-sortie a i {
+  font-style: normal;
+  font-size: 11px;
+  opacity: .7;
+  transition: transform var(--duree) var(--courbe), opacity var(--duree) var(--courbe);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dt-main-menu li.menu-sortie a:hover {
+    color: #fff;
+    border-color: var(--filet-actif);
+    background: var(--teinte-accent);
+  }
+  .dt-main-menu li.menu-sortie a:hover i { transform: translate(2px, -2px); opacity: 1; }
+}
+
 /* ===== Galerie accueil ===== */
 /* Grille de tuiles carrées, 3 colonnes, bord à bord (comme le plugin WordPress) */
 .galerie {
