@@ -358,7 +358,11 @@ body.accueil .galerie { margin-top: 0; }
 @media (max-width: 640px) {
   .galerie { grid-template-columns: 1fr; }
   /* background-attachment: fixed est mal géré sur iOS */
-  body { background-attachment: scroll; }
+  body {
+    background-attachment: scroll;
+    /* fond allégé : même cadrage, 53 Ko au lieu de 298 Ko (vignette générée par build-galerie.py) */
+    background-image: url('../images/mini/creation-800.webp');
+  }
   .site-title { font-size: 21px; }
   .site-header { padding-left: 16px; height: 96px; }
   body.accueil .site-header { height: 96px; padding-top: 20px; }
