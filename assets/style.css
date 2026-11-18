@@ -673,6 +673,13 @@ body.menu-ouvert { overflow: hidden; }
   fill: currentColor;
 }
 
+/* GitHub garde le cercle commun mais passe en mauve : c'est le seul profil
+   de code, on le distingue des réseaux sociaux. */
+.dt-social-icons a.dt-social-github {
+  color: var(--mauve-ai);
+  border-color: rgba(201, 168, 255, .5);
+}
+
 .dt-footer-bar {
   padding: 26px 20px 24px;
   background: var(--footer-bar);
