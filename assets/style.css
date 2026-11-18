@@ -617,6 +617,18 @@ body.menu-ouvert { overflow: hidden; }
   border: 0;
 }
 
+/* Lecteur Apple Music — hauteur fixe imposée par Apple, pleine largeur de la carte */
+.embarquement-musique {
+  margin: 34px 0;
+}
+
+.embarquement-musique iframe {
+  display: block;
+  width: 100%;
+  height: 450px;
+  border: 0;
+}
+
 .message-vide {
   font-size: 15px;
   color: var(--texte-clair-2);

@@ -35,6 +35,7 @@ PAGES = (
     "index.html",
     "portfolio/index.html",
     "jeanchri-musique/index.html",
+    "jeanchri-musique/liste-de-lecture/index.html",
     "aux-temps-possibles/index.html",
 )
 
