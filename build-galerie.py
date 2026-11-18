@@ -2,15 +2,21 @@
 """Régénère la galerie de index.html à partir de galerie.json.
 
 Usage :
-    python3 build-galerie.py            # génère les miniatures manquantes, puis index.html
+    python3 build-galerie.py            # miniatures + galerie + versions de cache
     python3 build-galerie.py --images   # ne génère que les miniatures
     python3 build-galerie.py --check    # vérifie que tout est à jour (exit 1 sinon)
 
 Les originaux (images/*.jpg) ne sont jamais modifiés : les miniatures sont
-écrites dans images/mini/ et servies par srcset. Le clic continue de pointer
-vers l'original pleine taille.
+écrites dans images/mini/ et servies par srcset. Le clic ouvre la visionneuse
+(assets/ui.js), ou l'original pleine taille si le JS est absent.
+
+La fraîcheur des miniatures est vérifiée par empreinte du CONTENU de l'original
+et non par mtime : un clone frais a des mtime arbitraires, donc l'ancienne
+comparaison signalait toutes les miniatures comme périmées après un checkout.
 """
+import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -18,24 +24,62 @@ from pathlib import Path
 
 RACINE = Path(__file__).parent
 DOSSIER_MINI = RACINE / "images" / "mini"
+MANIFESTE = DOSSIER_MINI / ".manifeste.json"
 LARGEURS = (400, 800, 1200)
 # Grille : 1 colonne ≤640 px, 2 colonnes ≤1024 px, 3 colonnes au-delà, bord à bord.
 SIZES = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+
+# Fichiers dont le ?v= doit suivre le contenu, et pages à réécrire.
+ASSETS = ("assets/style.css", "assets/menu.js", "assets/ui.js")
+PAGES = (
+    "index.html",
+    "portfolio/index.html",
+    "jeanchri-musique/index.html",
+    "aux-temps-possibles/index.html",
+)
+
+
+def empreinte(chemin: Path) -> str:
+    """8 premiers caractères de l'empreinte du contenu du fichier."""
+    return hashlib.sha256(chemin.read_bytes()).hexdigest()[:8]
 
 
 def chemin_mini(source: str, largeur: int) -> Path:
     return DOSSIER_MINI / f"{Path(source).stem}-{largeur}.webp"
 
 
+def lire_manifeste() -> dict:
+    if not MANIFESTE.exists():
+        return {}
+    try:
+        return json.loads(MANIFESTE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def ecrire_manifeste(donnees: dict) -> None:
+    entrees = {}
+    for img in donnees["images"]:
+        source = RACINE / img["src"]
+        if source.exists():
+            entrees[img["src"]] = empreinte(source)
+    DOSSIER_MINI.mkdir(parents=True, exist_ok=True)
+    MANIFESTE.write_text(
+        json.dumps(entrees, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
 def miniatures_a_generer(donnees: dict) -> list[tuple[Path, Path, int]]:
+    manifeste = lire_manifeste()
     a_faire = []
     for img in donnees["images"]:
         source = RACINE / img["src"]
         if not source.exists():
             continue
+        perimee = manifeste.get(img["src"]) != empreinte(source)
         for largeur in LARGEURS:
             cible = chemin_mini(img["src"], largeur)
-            if not cible.exists() or cible.stat().st_mtime < source.stat().st_mtime:
+            if perimee or not cible.exists():
                 a_faire.append((source, cible, largeur))
     return a_faire
 
@@ -103,22 +147,62 @@ def construire(html: str, donnees: dict) -> str:
     )
 
 
+def versionner(html: str) -> str:
+    """Réécrit les ?v= des feuilles de style et scripts avec l'empreinte réelle."""
+    for rel in ASSETS:
+        jeton = re.escape(Path(rel).name)
+        remplacement = empreinte(RACINE / rel)
+        html = re.sub(
+            rf"({jeton}\?v=)[^\"']+",
+            lambda m, v=remplacement: m.group(1) + v,
+            html,
+        )
+    return html
+
+
+def versionner_fichier(chemin: Path) -> bool:
+    """Réécrit les ?v= d'une page. True si le fichier a changé."""
+    avant = chemin.read_text(encoding="utf-8")
+    apres = versionner(avant)
+    if apres == avant:
+        return False
+    chemin.write_text(apres, encoding="utf-8")
+    return True
+
+
 def problemes(donnees: dict, html: str, nouveau: str) -> list[str]:
     constats = []
+    manifeste = lire_manifeste()
     for img in donnees["images"]:
         source = RACINE / img["src"]
         if not source.exists():
             constats.append(f"original manquant : {img['src']}")
             continue
+        if manifeste.get(img["src"]) != empreinte(source):
+            constats.append(
+                f"miniatures périmées (original modifié) : {img['src']}"
+            )
+            continue
         for largeur in LARGEURS:
             cible = chemin_mini(img["src"], largeur)
-            nom = cible.relative_to(RACINE).as_posix()
             if not cible.exists():
+                nom = cible.relative_to(RACINE).as_posix()
                 constats.append(f"miniature manquante : {nom}")
-            elif cible.stat().st_mtime < source.stat().st_mtime:
-                constats.append(f"miniature périmée : {nom}")
     if nouveau != html:
-        constats.append("index.html ne correspond plus à galerie.json")
+        constats.append("index.html ne correspond plus à galerie.json ou aux ?v=")
+    return constats
+
+
+def problemes_versions() -> list[str]:
+    """index.html est déjà couvert par la comparaison ci-dessus."""
+    constats = []
+    for nom in PAGES:
+        if nom == "index.html":
+            continue
+        chemin = RACINE / nom
+        avant = chemin.read_text(encoding="utf-8")
+        if versionner(avant) != avant:
+            constats.append(f"{nom} : ?v= périmé")
     return constats
 
 
@@ -126,26 +210,33 @@ def main() -> None:
     donnees = json.loads((RACINE / "galerie.json").read_text(encoding="utf-8"))
     index = RACINE / "index.html"
     html = index.read_text(encoding="utf-8")
-    nouveau = construire(html, donnees)
+    nouveau = versionner(construire(html, donnees))
     args = sys.argv[1:]
 
     if "--check" in args:
-        constats = problemes(donnees, html, nouveau)
+        constats = problemes(donnees, html, nouveau) + problemes_versions()
         if constats:
             for constat in constats:
                 print(f"✗ {constat}")
             print("→ lancer : python3 build-galerie.py")
             sys.exit(1)
-        print(f"OK : galerie à jour ({len(donnees['images'])} images, miniatures présentes)")
+        print(
+            f"OK : galerie à jour ({len(donnees['images'])} images, "
+            "miniatures présentes, ?v= à jour)"
+        )
         return
 
     generer_miniatures(donnees)
+    ecrire_manifeste(donnees)
     if "--images" in args:
         print("OK : miniatures à jour")
         return
 
     index.write_text(nouveau, encoding="utf-8")
+    pages = [nom for nom in PAGES if versionner_fichier(RACINE / nom)]
     print(f"OK : {len(donnees['images'])} images écrites dans index.html")
+    if pages:
+        print(f"OK : ?v= mis à jour dans {len(pages)} page(s)")
 
 
 if __name__ == "__main__":
