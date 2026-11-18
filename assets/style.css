@@ -58,8 +58,11 @@
   --police-titre: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --police-corps: "Inter", "Roboto", system-ui, -apple-system, sans-serif;
   --police-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  /* titre du site : Roboto 700 conservé d'avant la refonte, à la demande */
+  --police-entete: "Roboto", "Inter", system-ui, -apple-system, sans-serif;
+  /* mauve du logotype « AI » dans le menu */
+  --mauve-ai: #c9a8ff;
   --titre-1: clamp(32px, 4vw, 44px);     /* h1 de page */
-  --titre-2: clamp(21px, 2.2vw, 28px);   /* titre du site */
   --titre-menu: clamp(26px, 3vw, 34px);  /* entrees de menu */
   --corps: 16px;
   --interligne: 1.75;
@@ -167,16 +170,16 @@ body.accueil .site-header.condense .site-description {
   display: none;
 }
 
-body.accueil .site-title { font-weight: 400; }
+body.accueil .site-title { font-weight: 700; }
 
-body.accueil .site-title { font-weight: 400; }
-
+/* Titre du site : retour au Roboto 700 d'avant la refonte. Le serif reste sur
+   les <h1>, les entrees de menu et la citation. Tailles par palier comme a
+   l'origine : un clamp() laissait le titre a 19px jusqu'a 950px de large. */
 .site-title {
-  font-family: var(--police-titre);
-  font-size: var(--titre-2);
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: 0;
+  font-family: var(--police-entete);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .site-title a { color: #fff; }
@@ -368,39 +371,48 @@ body.menu-ouvert { overflow: hidden; }
   border-top: 1px solid var(--filet);
 }
 
+/* Sortie vers ai.jeanchri.com : plus de pastille monospace, un vrai lien
+   textuel « jeanChri AI ↗ » dont seul le « AI » porte la couleur. */
 .dt-main-menu li.menu-sortie a {
   display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 6px 15px 7px;
-  border: 1px solid var(--filet);
-  border-radius: 999px;
-  font-family: var(--police-mono);
-  font-size: 12px;
+  align-items: baseline;
+  gap: 11px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font-family: var(--police-titre);
+  font-size: 22px;
   font-weight: 400;
-  letter-spacing: .2em;
-  color: var(--texte-clair-2);
-  transition: color var(--duree) var(--courbe),
-              border-color var(--duree) var(--courbe),
-              background-color var(--duree) var(--courbe);
+  letter-spacing: 0;
+  color: var(--texte-clair);
+  transition: color var(--duree) var(--courbe);
+}
+
+.dt-main-menu li.menu-sortie .menu-marque { color: inherit; }
+
+/* « AI » est mis en evidence par la couleur ET par la taille : a taille egale
+   il se lisait comme la fin du mot. */
+.dt-main-menu li.menu-sortie .menu-ai {
+  color: var(--mauve-ai);
+  font-size: 1.2em;
+  letter-spacing: .05em;
+  transition: color var(--duree) var(--courbe);
 }
 
 .dt-main-menu li.menu-sortie a::after { display: none; }
 
 .dt-main-menu li.menu-sortie a i {
   font-style: normal;
-  font-size: 11px;
-  opacity: .7;
-  transition: transform var(--duree) var(--courbe), opacity var(--duree) var(--courbe);
+  font-size: 15px;
+  line-height: 1;
+  color: var(--mauve-ai);
+  transition: transform var(--duree) var(--courbe);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .dt-main-menu li.menu-sortie a:hover {
-    color: #fff;
-    border-color: var(--filet-actif);
-    background: var(--teinte-accent);
-  }
-  .dt-main-menu li.menu-sortie a:hover i { transform: translate(2px, -2px); opacity: 1; }
+  .dt-main-menu li.menu-sortie a:hover { color: #fff; }
+  .dt-main-menu li.menu-sortie a:hover .menu-ai { color: #e6d9ff; }
+  .dt-main-menu li.menu-sortie a:hover i { transform: translate(2px, -2px); }
 }
 
 /* ===== Galerie accueil ===== */
@@ -801,10 +813,17 @@ body.visionneuse-ouverte { overflow: hidden; }
      générée par build-galerie.py). */
   .toile { background-image: url('../images/mini/creation-800.webp'); }
   :root { --hauteur-entete: 96px; }
-  .site-title { font-size: var(--titre-2); }
-  .site-header { padding-left: 16px; height: 96px; }
+  /* Le titre est en Roboto 700, bien plus large que le serif : sans la
+     reserve a droite il passait sous le burger. Avec, il passe a la ligne
+     sur les petits ecrans (390px) et tient sur une ligne au-dela de ~426px. */
+  .site-header { padding-left: 16px; padding-right: 84px; height: auto; }
   body.accueil .site-header { padding-top: 20px; }
   #dt_breadcrumbs { padding: 16px; }
+  .site-title { font-size: 20px; }
+  /* Passe a la ligne, la boite doit suivre : l'en-tete d'accueil etant hors
+     flux, grandir ne decale aucun contenu ; celui des pages internes pousse
+     le contenu vers le bas, ce qui est le comportement voulu. */
+  body.accueil .site-header.condense .site-title { font-size: 17px; }
   .zone-contenu { padding: 50px 14px 70px; }
   .carte-contenu { padding: 32px 24px 40px; }
 }
