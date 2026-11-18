@@ -28,6 +28,10 @@
   --teinte-accent: rgba(85, 0, 232, .35);
   --duree: .28s;
   --courbe: cubic-bezier(.2, .8, .2, 1);
+  /* Liens sur fond sombre. Les violets d'origine (#4a0063) tombent sous 1.5:1
+     une fois posés sur #0a0a0a : ils ne servent plus que de teinte de référence. */
+  --lien: rgba(255, 255, 255, .72);
+  --lien-survol: #c9a8ff;
 }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -52,8 +56,8 @@ body {
   background-attachment: fixed;
 }
 
-a { color: var(--violet-lien); text-decoration: none; }
-a:hover { color: var(--accent); }
+a { color: var(--lien); text-decoration: none; }
+a:hover { color: var(--lien-survol); }
 
 img { max-width: 100%; height: auto; display: block; }
 
@@ -73,16 +77,12 @@ img { max-width: 100%; height: auto; display: block; }
 body.accueil .site-header {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 118px;
-  padding: 30px 11px 30px 30px;
   background: rgba(30, 38, 46, .4);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
 body.accueil .site-title { font-weight: 400; }
-
-body.accueil .galerie { margin-top: 0; }
 
 .site-title {
   font-size: 28px;
@@ -91,7 +91,7 @@ body.accueil .galerie { margin-top: 0; }
 }
 
 .site-title a { color: #fff; }
-.site-title a:hover { color: var(--accent); }
+.site-title a:hover { color: var(--lien-survol); }
 
 .site-description {
   font-size: 13px;
@@ -179,7 +179,7 @@ body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
 }
 
 
-.dt-main-menu li a[aria-current="page"] { color: var(--accent); }
+.dt-main-menu li a[aria-current="page"] { color: var(--filet-actif); }
 .dt-main-menu li a[aria-current="page"]::after { transform: scaleX(1); }
 
 body.menu-ouvert { overflow: hidden; }
@@ -234,8 +234,6 @@ body.menu-ouvert { overflow: hidden; }
   gap: 0;
 }
 
-body.accueil .galerie { margin-top: 0; }
-
 .galerie figure {
   position: relative;
   margin: 0;
@@ -283,16 +281,24 @@ body.accueil .galerie { margin-top: 0; }
   background: rgba(30, 38, 46, .65);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  padding: 20px 0 20px 160px;
+  padding: 20px 24px;
+}
+
+/* contenu centré : le fond couvre toute la largeur, le texte s'aligne sur la
+   colonne de contenu (l'ancien padding-left: 160px en dur cassait sous 1148px) */
+#dt_breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 1100px;
+  margin: 0 auto;
+  list-style: none;
   font-size: 14px;
   font-weight: 500;
 }
 
 #dt_breadcrumbs li {
-  display: inline-block;
-  padding: 0 2px;
   color: var(--texte-clair);
-  list-style: none;
 }
 
 #dt_breadcrumbs a {
@@ -353,8 +359,6 @@ body.accueil .galerie { margin-top: 0; }
   color: #fff;
   text-decoration-color: var(--filet-actif);
 }
-
-.carte-contenu p:last-child { margin-bottom: 0; }
 
 /* Citation (pullquote) — page Musique */
 .wp-block-pullquote {
@@ -507,7 +511,7 @@ body.accueil .galerie { margin-top: 0; }
   }
   .dt-footer-ai:hover i { transform: translate(2px, -2px); opacity: 1; }
 
-  .dt-main-menu li a:hover { color: var(--accent); }
+  .dt-main-menu li a:hover { color: var(--lien-survol); }
   .dt-main-menu li a:hover::after { transform: scaleX(1); }
 }
 
@@ -526,10 +530,36 @@ body.accueil .galerie { margin-top: 0; }
   }
   .site-title { font-size: 21px; }
   .site-header { padding-left: 16px; height: 96px; }
-  body.accueil .site-header { height: 96px; padding-top: 20px; }
-  body.accueil .galerie { margin-top: 0; }
-  #dt_breadcrumbs { padding-left: 16px; }
+  body.accueil .site-header { padding-top: 20px; }
+  #dt_breadcrumbs { padding: 16px; }
   .zone-contenu { padding: 50px 14px 70px; }
   .carte-contenu { padding: 32px 24px 40px; }
   .entry-title { font-size: 27px; }
+}
+
+/* ===== Replis ===== */
+/* Sans backdrop-filter (anciens Firefox, navigateurs sans GPU), le verre
+   translucide laisserait le wallpaper traverser le texte : on opacifie. */
+@supports not ((backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))) {
+  .site-header,
+  body.accueil .site-header,
+  #dt_breadcrumbs,
+  .carte-contenu {
+    background: rgba(30, 38, 46, .97);
+  }
+  .dt-main-menu { background: rgba(20, 26, 32, .985); }
+}
+
+/* ===== Mouvement réduit =====
+   Demande système : on garde les changements d'état, on supprime le trajet. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .galerie img { transform: none !important; }
 }
