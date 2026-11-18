@@ -19,6 +19,21 @@
   trigger.setAttribute('aria-expanded', 'false');
   trigger.setAttribute('aria-controls', 'menu-principal');
 
+  // Origine du cercle d'ouverture : le centre du burger, exprimé dans le
+  // repère du menu. Remesurée à chaque ouverture et au redimensionnement,
+  // sinon le cercle part d'un point faux après un scroll ou une rotation.
+  function poserOrigine() {
+    var b = trigger.getBoundingClientRect();
+    var m = menu.getBoundingClientRect();
+    menu.style.setProperty(
+      '--origine-menu',
+      (b.left + b.width / 2 - m.left) + 'px ' + (b.top + b.height / 2 - m.top) + 'px'
+    );
+  }
+
+  poserOrigine();
+  window.addEventListener('resize', poserOrigine, { passive: true });
+
   // Le burger reste dans la boucle : il porte la fermeture et reste au-dessus du menu.
   function focusables() {
     return Array.prototype.slice
@@ -38,6 +53,7 @@
     fond.forEach(function (el) { el.inert = ouvert; });
 
     if (ouvert) {
+      poserOrigine();
       dernierFocus = document.activeElement;
       var premier = menu.querySelector('a');
       if (premier) premier.focus({ preventScroll: true });

@@ -159,8 +159,13 @@ body.accueil .site-title { font-weight: 400; }
   position: fixed;
   top: 20px; right: 20px;
   width: 48px; height: 48px;
-  background: #fff;
-  border: 1px solid rgba(39, 48, 57, .35);
+  /* même recette de verre que le reste : le carré blanc plein jurait avec
+     les cinq autres surfaces translucides */
+  background: var(--verre-fond-opaque);
+  -webkit-backdrop-filter: blur(var(--verre-flou));
+  backdrop-filter: blur(var(--verre-flou));
+  border: 1px solid var(--verre-bord);
+  box-shadow: var(--verre-ombre);
   border-radius: 2px;
   cursor: pointer;
   z-index: 300;
@@ -178,7 +183,7 @@ body.accueil .site-title { font-weight: 400; }
   display: block;
   width: 22px;
   height: 3px;
-  background: #273039;
+  background: #fff;
   transition: transform var(--duree) var(--courbe),
               opacity var(--duree) var(--courbe),
               background-color var(--duree) var(--courbe);
@@ -201,16 +206,94 @@ body.menu-ouvert .dt-menu-trigger span:nth-child(3) { transform: translateY(-8px
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  /* Ouverture en cercle ancrée sur le burger. --origine-menu est mesuré en
+     JS au clic (assets/menu.js) ; la valeur ci-dessous n'est qu'un repli
+     pour le tout premier rendu. */
+  --origine-menu: calc(100% - 44px) 44px;
+  clip-path: circle(0% at var(--origine-menu));
   visibility: hidden;
-  transition: opacity .25s;
+  /* visibilité retardée à la fermeture : sinon le cercle se referme dans le
+     vide, l'élément étant masqué dès la première image */
+  transition: clip-path .5s var(--courbe), visibility 0s .5s;
 }
 
-body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
+body.menu-ouvert .dt-main-menu {
+  clip-path: circle(150% at var(--origine-menu));
+  visibility: visible;
+  transition: clip-path .5s var(--courbe), visibility 0s 0s;
+}
 
-.dt-main-menu ul { list-style: none; text-align: center; }
+.dt-main-menu ul {
+  list-style: none;
+  counter-reset: menu;
+  /* Largeur commune à toutes les entrées : c'est elle qui fait tenir les
+     numéros en colonne. Sans elle, chaque <li> est une grille recentrée
+     indépendamment et les numéros flottent (705 / 697 / 631 px). */
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
 
-.dt-main-menu li { padding: 14px 0; }
+/* Cascade : chaque entrée entre avec un décalage, dans l'ordre, et ressort à
+   l'envers. L'index vient de :nth-child plutôt que d'un style="--i" dans le
+   HTML : même résultat, markup inchangé, rien à resynchroniser. */
+.dt-main-menu li:nth-child(1) { --i: 0; }
+.dt-main-menu li:nth-child(2) { --i: 1; }
+.dt-main-menu li:nth-child(3) { --i: 2; }
+.dt-main-menu li:nth-child(4) { --i: 3; }
+
+.dt-main-menu li {
+  padding: 14px 0;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .45s var(--courbe), transform .45s var(--courbe);
+  transition-delay: calc((3 - var(--i, 0)) * 30ms);
+}
+
+body.menu-ouvert .dt-main-menu li {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--i, 0) * 60ms + 140ms);
+}
+
+/* Numérotation : raccorde les entrées au badge monospace « ai ».
+   Le numéro est placé dans une colonne de grille à largeur fixe sur le <li>,
+   pas en ::before du <a> : dans le <a> il flottait selon la longueur du mot
+   (664 / 668 / 596 px) et le soulignement le traversait. */
+.dt-main-menu li:not(.menu-sortie) {
+  counter-increment: menu;
+  display: grid;
+  grid-template-columns: 3.2em auto;
+  align-items: baseline;
+}
+
+.dt-main-menu li.menu-sortie { text-align: center; }
+
+.dt-main-menu li:not(.menu-sortie)::before {
+  content: counter(menu, decimal-leading-zero);
+  grid-column: 1;
+  justify-self: end;
+  padding-right: 16px;
+  font-family: var(--police-mono);
+  font-size: var(--micro);
+  font-weight: 400;
+  letter-spacing: .14em;
+  color: var(--texte-clair-2);
+  opacity: .55;
+  transition: color var(--duree) var(--courbe), opacity var(--duree) var(--courbe);
+}
+
+/* justify-self : sans lui, le <a> s'étire sur toute la colonne et le
+   soulignement (::after, left:0/right:0) déborde largement du mot. */
+.dt-main-menu li:not(.menu-sortie) a { grid-column: 2; justify-self: start; }
+
+body.menu-ouvert .dt-main-menu li a[aria-current="page"] { color: var(--filet-actif); }
+
+.dt-main-menu li:has(a[aria-current="page"])::before {
+  color: var(--filet-actif);
+  opacity: 1;
+}
 
 .dt-main-menu li a {
   position: relative;
@@ -558,11 +641,12 @@ body.menu-ouvert { overflow: hidden; }
    Sur mobile, :hover reste accroché après le tap et fausse l'état des boutons. */
 @media (hover: hover) and (pointer: fine) {
   .dt-menu-trigger:hover {
-    border-color: var(--accent);
-    background: #f6f2ff;
-    box-shadow: 0 6px 22px rgba(85, 0, 232, .22);
+    border-color: var(--filet-actif);
+    background: rgba(20, 26, 32, .94);
+    box-shadow: 0 6px 22px rgba(85, 0, 232, .28);
   }
-  .dt-menu-trigger:hover span { background: var(--accent); }
+  .dt-menu-trigger:hover span { background: var(--filet-actif); }
+  .dt-main-menu li:has(a:hover)::before { color: var(--filet-actif); opacity: 1; }
 
   .dt-social-icons a:hover {
     border-color: var(--filet-actif);
@@ -613,6 +697,36 @@ body.menu-ouvert { overflow: hidden; }
     background: rgba(30, 38, 46, .97);
   }
   .dt-main-menu { background: rgba(20, 26, 32, .985); }
+}
+
+/* Navigateurs sans clip-path circulaire : on revient au fondu d'origine. */
+@supports not (clip-path: circle(0% at 0 0)) {
+  .dt-main-menu {
+    clip-path: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s, visibility 0s .25s;
+  }
+  body.menu-ouvert .dt-main-menu {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .25s, visibility 0s 0s;
+  }
+}
+
+/* Mouvement réduit : le cercle et la cascade sont des trajets, pas des états. */
+@media (prefers-reduced-motion: reduce) {
+  .dt-main-menu,
+  body.menu-ouvert .dt-main-menu {
+    clip-path: none;
+    transition: visibility 0s 0s;
+  }
+  .dt-main-menu li,
+  body.menu-ouvert .dt-main-menu li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* ===== Mouvement réduit =====
