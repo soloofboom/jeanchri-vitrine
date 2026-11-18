@@ -6,13 +6,35 @@
 <title>Portfolio – jeanChri _ artiste multi-disciplinaire</title>
 <meta name="description" content="Portfolio de jeanChri, artiste multi-disciplinaire.">
 <link rel="canonical" href="https://jeanchri.com/portfolio/">
+<!-- Page vide, non listée dans le menu : on la retire de l'index et du
+     sitemap plutôt que de laisser un visiteur venu de Google tomber dans
+     le vide. noindex sans nofollow : les liens sortants restent suivis. -->
+<meta name="robots" content="noindex, follow">
+<!-- Aperçu des partages : carte 1200x630 (images/partage.jpg) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="jeanChri _ artiste multi-disciplinaire">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Portfolio – jeanChri _ artiste multi-disciplinaire">
+<meta property="og:description" content="Portfolio de jeanChri, artiste multi-disciplinaire.">
+<meta property="og:url" content="https://jeanchri.com/portfolio/">
+<meta property="og:image" content="https://jeanchri.com/images/partage.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Création — visuel du site jeanChri">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Portfolio – jeanChri _ artiste multi-disciplinaire">
+<meta name="twitter:description" content="Portfolio de jeanChri, artiste multi-disciplinaire.">
+<meta name="twitter:image" content="https://jeanchri.com/images/partage.jpg">
+<meta name="theme-color" content="#1e262e">
 <link rel="icon" type="image/jpeg" href="../images/site-icon.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261116-5">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css?v=e1ee03eb">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body class="page-inner page page-id-190">
+<div class="toile" aria-hidden="true"></div>
 
 <header class="site-header">
 	<div class="dt-logo">
@@ -34,17 +56,19 @@
 	</ul>
 </nav>
 <button class="dt-menu-trigger" aria-label="Ouvrir le menu" aria-expanded="false">
-	<span></span><span></span><span></span>
+	<span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
 </button>
 
 <div class="bandeau-page" role="presentation"></div>
 
-<ul id="dt_breadcrumbs">
-	<li><a href="../">Home</a> /</li>
-	<li>Portfolio</li>
-</ul>
+<nav id="dt_breadcrumbs" aria-label="Fil d'Ariane">
+	<ol>
+		<li><a href="../">Home</a> /</li>
+		<li>Portfolio</li>
+	</ol>
+</nav>
 
-<div class="zone-contenu">
+<main class="zone-contenu">
 	<article class="carte-contenu">
 		<header class="entry-header">
 			<h1 class="entry-title">Portfolio</h1>
@@ -54,7 +78,7 @@
 			<p class="message-vide">No items were found matching your selection.</p>
 		</div>
 	</article>
-</div>
+</main>
 
 <footer class="dt-footer">
 	<div class="dt-footer-social">
@@ -84,6 +108,7 @@
 	</div>
 </footer>
 
-<script src="../assets/menu.js?v=20260905-6"></script>
+<script src="../assets/menu.js?v=3573da1d"></script>
+<script src="../assets/ui.js?v=62c20a21"></script>
 </body>
 </html>

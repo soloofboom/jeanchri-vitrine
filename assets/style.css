@@ -28,9 +28,63 @@
   --teinte-accent: rgba(85, 0, 232, .35);
   --duree: .28s;
   --courbe: cubic-bezier(.2, .8, .2, 1);
+  /* Liens sur fond sombre. Les violets d'origine (#4a0063) tombent sous 1.5:1
+     une fois posés sur #0a0a0a : ils ne servent plus que de teinte de référence. */
+  --lien: rgba(255, 255, 255, .72);
+  --lien-survol: #c9a8ff;
+
+  /* ===== Système de verre =====
+     Une seule recette pour les cinq surfaces translucides. Avant, le site
+     empilait cinq fonds et trois valeurs de flou posés au cas par cas. */
+  --verre-fond-leger: rgba(30, 38, 46, .42);   /* header accueil : la photo domine */
+  --verre-fond: rgba(30, 38, 46, .68);         /* header interne, fil d'Ariane */
+  --verre-fond-fort: rgba(30, 38, 46, .82);    /* cartes de contenu */
+  --verre-fond-opaque: rgba(20, 26, 32, .88);  /* menu plein écran : masque le fond */
+  --verre-flou-leger: 10px;
+  --verre-flou: 14px;
+  --verre-flou-fort: 18px;
+  --verre-bord: rgba(255, 255, 255, .10);
+  /* liséré clair sur l'arête supérieure + ombre portée : donne l'épaisseur */
+  --verre-ombre: inset 0 1px 0 rgba(255, 255, 255, .06),
+                 0 18px 48px -24px rgba(0, 0, 0, .65);
+  /* bruit fractal : casse l'aplat des surfaces sombres (voir body::after) */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* ===== Echelle typographique =====
+     Roboto couvrait 300->900 et servait a tout : aucune hierarchie, et un
+     letter-spacing de .06em pose sur du texte courant. Trois familles,
+     trois roles. Instrument Serif n'a qu'un poids : la hierarchie passe
+     par le corps et la casse, pas par la graisse. */
+  --police-titre: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --police-corps: "Inter", "Roboto", system-ui, -apple-system, sans-serif;
+  --police-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --titre-1: clamp(32px, 4vw, 44px);     /* h1 de page */
+  --titre-2: clamp(21px, 2.2vw, 28px);   /* titre du site */
+  --titre-menu: clamp(26px, 3vw, 34px);  /* entrees de menu */
+  --corps: 16px;
+  --interligne: 1.75;
+  --micro: 11px;
+
+  /* Hauteur de l'en-tête, en un seul endroit : elle sert à la fois de hauteur
+     de boîte et de décalage de la galerie sur l'accueil. */
+  --hauteur-entete: 118px;
 }
 
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; background-color: #0a0a0a; }
+
+/* Grain : casse l'aplat des surfaces sombres. Au-dessus de tout pour rester
+   uniforme, transparent aux clics. Couche fixe et opaque en mélange simple :
+   pas de mix-blend-mode, qui force une recomposition à chaque frame au scroll. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  background-image: var(--grain);
+  background-repeat: repeat;
+  opacity: .045;
+}
 
 /* un seul anneau de focus pour tout le site */
 :focus-visible {
@@ -40,64 +94,101 @@ html { -webkit-text-size-adjust: 100%; }
 }
 
 body {
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: var(--police-corps);
   color: var(--texte-clair);
-  letter-spacing: .06em;
-  /* Wallpaper d'origine (WordPress custom-background) */
+  letter-spacing: .01em;
+}
+
+/* Wallpaper : une couche fixe plutôt que background-attachment: fixed, qui
+   force un repaint plein écran à chaque frame au scroll. */
+.toile {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-color: #0a0a0a;
   background-image: url('../images/creation.jpg');
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
-a { color: var(--violet-lien); text-decoration: none; }
-a:hover { color: var(--accent); }
+a { color: var(--lien); text-decoration: none; }
+a:hover { color: var(--lien-survol); }
 
 img { max-width: 100%; height: auto; display: block; }
 
 /* ===== En-tête ===== */
 /* verre dépoli : translucide + flou, le wallpaper se devine sans gêner la lecture */
 .site-header {
-  background: rgba(30, 38, 46, .75);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  height: 118px;
+  background: var(--verre-fond);
+  -webkit-backdrop-filter: blur(var(--verre-flou));
+  backdrop-filter: blur(var(--verre-flou));
+  border-bottom: 1px solid var(--verre-bord);
+  box-shadow: var(--verre-ombre);
+  height: var(--hauteur-entete);
   padding: 30px 11px 30px 30px;
   position: relative;
   z-index: 100;
 }
 
-/* Sur l'accueil, voile léger : le wallpaper reste visible, le titre blanc reste lisible */
+/* Sur l'accueil, l'en-tête est fixé HORS FLUX. Un sticky dont la hauteur
+   changerait au scroll ferait sauter tout le contenu de 52px ; hors flux,
+   la condensation est gratuite. padding-top + marge négative restituent la
+   composition d'origine : les photos passent sous le verre. */
 body.accueil .site-header {
-  position: absolute;
+  position: fixed;
   top: 0; left: 0; right: 0;
-  height: 118px;
-  padding: 30px 11px 30px 30px;
-  background: rgba(30, 38, 46, .4);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  overflow: hidden;
+  background: var(--verre-fond-leger);
+  -webkit-backdrop-filter: blur(var(--verre-flou-leger));
+  backdrop-filter: blur(var(--verre-flou-leger));
+  transition: height .3s var(--courbe),
+              padding .3s var(--courbe),
+              background-color .3s var(--courbe);
+}
+
+body.accueil { padding-top: var(--hauteur-entete); }
+
+body.accueil .galerie { margin-top: calc(-1 * var(--hauteur-entete)); }
+
+body.accueil .site-header.condense {
+  height: 68px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background: var(--verre-fond);
+}
+
+body.accueil .site-header.condense .site-title { font-size: 21px; }
+
+body.accueil .site-description { transition: opacity .2s var(--courbe); }
+
+body.accueil .site-header.condense .site-description {
+  display: none;
 }
 
 body.accueil .site-title { font-weight: 400; }
 
-body.accueil .galerie { margin-top: 0; }
+body.accueil .site-title { font-weight: 400; }
 
 .site-title {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: var(--police-titre);
+  font-size: var(--titre-2);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
 }
 
 .site-title a { color: #fff; }
-.site-title a:hover { color: var(--accent); }
+.site-title a:hover { color: var(--lien-survol); }
 
 .site-description {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: .09em;
+  text-transform: uppercase;
   color: var(--texte-clair-2);
-  margin-top: 2px;
+  margin-top: 5px;
 }
 
 /* ===== Menu (burger) ===== */
@@ -105,8 +196,13 @@ body.accueil .galerie { margin-top: 0; }
   position: fixed;
   top: 20px; right: 20px;
   width: 48px; height: 48px;
-  background: #fff;
-  border: 1px solid rgba(39, 48, 57, .35);
+  /* même recette de verre que le reste : le carré blanc plein jurait avec
+     les cinq autres surfaces translucides */
+  background: var(--verre-fond-opaque);
+  -webkit-backdrop-filter: blur(var(--verre-flou));
+  backdrop-filter: blur(var(--verre-flou));
+  border: 1px solid var(--verre-bord);
+  box-shadow: var(--verre-ombre);
   border-radius: 2px;
   cursor: pointer;
   z-index: 300;
@@ -124,7 +220,7 @@ body.accueil .galerie { margin-top: 0; }
   display: block;
   width: 22px;
   height: 3px;
-  background: #273039;
+  background: #fff;
   transition: transform var(--duree) var(--courbe),
               opacity var(--duree) var(--courbe),
               background-color var(--duree) var(--courbe);
@@ -139,30 +235,111 @@ body.menu-ouvert .dt-menu-trigger span:nth-child(3) { transform: translateY(-8px
 .dt-main-menu {
   position: fixed;
   inset: 0;
-  background: rgba(20, 26, 32, .88);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  background: var(--verre-fond-opaque);
+  -webkit-backdrop-filter: blur(var(--verre-flou-fort));
+  backdrop-filter: blur(var(--verre-flou-fort));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
   z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  /* Ouverture en cercle ancrée sur le burger. --origine-menu est mesuré en
+     JS au clic (assets/menu.js) ; la valeur ci-dessous n'est qu'un repli
+     pour le tout premier rendu. */
+  --origine-menu: calc(100% - 44px) 44px;
+  clip-path: circle(0% at var(--origine-menu));
   visibility: hidden;
-  transition: opacity .25s;
+  /* visibilité retardée à la fermeture : sinon le cercle se referme dans le
+     vide, l'élément étant masqué dès la première image */
+  transition: clip-path .5s var(--courbe), visibility 0s .5s;
 }
 
-body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
+body.menu-ouvert .dt-main-menu {
+  clip-path: circle(150% at var(--origine-menu));
+  visibility: visible;
+  transition: clip-path .5s var(--courbe), visibility 0s 0s;
+}
 
-.dt-main-menu ul { list-style: none; text-align: center; }
+.dt-main-menu ul {
+  list-style: none;
+  counter-reset: menu;
+  /* Largeur commune à toutes les entrées : c'est elle qui fait tenir les
+     numéros en colonne. Sans elle, chaque <li> est une grille recentrée
+     indépendamment et les numéros flottent (705 / 697 / 631 px). */
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
 
-.dt-main-menu li { padding: 14px 0; }
+/* Cascade : chaque entrée entre avec un décalage, dans l'ordre, et ressort à
+   l'envers. L'index vient de :nth-child plutôt que d'un style="--i" dans le
+   HTML : même résultat, markup inchangé, rien à resynchroniser. */
+.dt-main-menu li:nth-child(1) { --i: 0; }
+.dt-main-menu li:nth-child(2) { --i: 1; }
+.dt-main-menu li:nth-child(3) { --i: 2; }
+.dt-main-menu li:nth-child(4) { --i: 3; }
+
+.dt-main-menu li {
+  padding: 14px 0;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .45s var(--courbe), transform .45s var(--courbe);
+  transition-delay: calc((3 - var(--i, 0)) * 30ms);
+}
+
+body.menu-ouvert .dt-main-menu li {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--i, 0) * 60ms + 140ms);
+}
+
+/* Numérotation : raccorde les entrées au badge monospace « ai ».
+   Le numéro est placé dans une colonne de grille à largeur fixe sur le <li>,
+   pas en ::before du <a> : dans le <a> il flottait selon la longueur du mot
+   (664 / 668 / 596 px) et le soulignement le traversait. */
+.dt-main-menu li:not(.menu-sortie) {
+  counter-increment: menu;
+  display: grid;
+  grid-template-columns: 3.2em auto;
+  align-items: baseline;
+}
+
+.dt-main-menu li.menu-sortie { text-align: center; }
+
+.dt-main-menu li:not(.menu-sortie)::before {
+  content: counter(menu, decimal-leading-zero);
+  grid-column: 1;
+  justify-self: end;
+  padding-right: 16px;
+  font-family: var(--police-mono);
+  font-size: var(--micro);
+  font-weight: 400;
+  letter-spacing: .14em;
+  color: var(--texte-clair-2);
+  opacity: .55;
+  transition: color var(--duree) var(--courbe), opacity var(--duree) var(--courbe);
+}
+
+/* justify-self : sans lui, le <a> s'étire sur toute la colonne et le
+   soulignement (::after, left:0/right:0) déborde largement du mot. */
+.dt-main-menu li:not(.menu-sortie) a { grid-column: 2; justify-self: start; }
+
+body.menu-ouvert .dt-main-menu li a[aria-current="page"] { color: var(--filet-actif); }
+
+.dt-main-menu li:has(a[aria-current="page"])::before {
+  color: var(--filet-actif);
+  opacity: 1;
+}
 
 .dt-main-menu li a {
   position: relative;
   display: inline-block;
   padding: 2px 0;
-  font-size: 26px;
-  font-weight: 500;
+  font-family: var(--police-titre);
+  font-size: var(--titre-menu);
+  font-weight: 400;
+  letter-spacing: 0;
   color: var(--texte-clair);
   transition: color var(--duree) var(--courbe);
 }
@@ -179,7 +356,7 @@ body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
 }
 
 
-.dt-main-menu li a[aria-current="page"] { color: var(--accent); }
+.dt-main-menu li a[aria-current="page"] { color: var(--filet-actif); }
 .dt-main-menu li a[aria-current="page"]::after { transform: scaleX(1); }
 
 body.menu-ouvert { overflow: hidden; }
@@ -198,7 +375,7 @@ body.menu-ouvert { overflow: hidden; }
   padding: 6px 15px 7px;
   border: 1px solid var(--filet);
   border-radius: 999px;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--police-mono);
   font-size: 12px;
   font-weight: 400;
   letter-spacing: .2em;
@@ -234,11 +411,10 @@ body.menu-ouvert { overflow: hidden; }
   gap: 0;
 }
 
-body.accueil .galerie { margin-top: 0; }
-
 .galerie figure {
   position: relative;
   margin: 0;
+  overflow: hidden;
 }
 
 .galerie a { display: block; }
@@ -248,29 +424,48 @@ body.accueil .galerie { margin-top: 0; }
   height: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  transition: transform .7s var(--courbe);
 }
 
 .galerie figcaption {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  padding: 12px 14px;
-  background: var(--overlay);
+  padding: 34px 14px 14px;
+  /* dégradé plutôt qu'un aplat violet : la légende se pose sur la photo
+     au lieu de la barrer */
+  background: linear-gradient(to top, rgba(10, 12, 14, .86), rgba(10, 12, 14, 0));
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
+  letter-spacing: .02em;
   text-align: center;
   opacity: 0;
-  transition: opacity .3s;
+  transform: translateY(8px);
+  transition: opacity .35s var(--courbe), transform .35s var(--courbe);
+}
+
+/* Révélation au scroll. L'état caché n'est posé que si le JS a tourné (classe
+   .js sur <html>), sinon la galerie resterait invisible sans JS. */
+.js .galerie figure {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .7s var(--courbe), transform .7s var(--courbe);
+}
+
+.js .galerie figure.visible {
+  opacity: 1;
+  transform: none;
 }
 
 .galerie figure:hover figcaption,
 .galerie a:focus-visible figcaption,
 .galerie figure:focus-within figcaption {
   opacity: 1;
+  transform: none;
 }
 
 @media (hover: none) {
-  .galerie figcaption { opacity: 1; }
+  .galerie figcaption { opacity: 1; transform: none; }
 }
 
 /* ===== Pages internes ===== */
@@ -280,19 +475,27 @@ body.accueil .galerie { margin-top: 0; }
 }
 
 #dt_breadcrumbs {
-  background: rgba(30, 38, 46, .65);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  padding: 20px 0 20px 160px;
-  font-size: 14px;
+  background: var(--verre-fond);
+  -webkit-backdrop-filter: blur(var(--verre-flou-leger));
+  backdrop-filter: blur(var(--verre-flou-leger));
+  padding: 20px 24px;
+}
+
+/* contenu centré : le fond couvre toute la largeur, le texte s'aligne sur la
+   colonne de contenu (l'ancien padding-left: 160px en dur cassait sous 1148px) */
+#dt_breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 1100px;
+  margin: 0 auto;
+  list-style: none;
+  font-size: 13px;
   font-weight: 500;
 }
 
 #dt_breadcrumbs li {
-  display: inline-block;
-  padding: 0 2px;
   color: var(--texte-clair);
-  list-style: none;
 }
 
 #dt_breadcrumbs a {
@@ -316,15 +519,20 @@ body.accueil .galerie { margin-top: 0; }
 .carte-contenu {
   max-width: 750px;
   margin: 0 auto;
-  background: rgba(30, 38, 46, .82);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  background: var(--verre-fond-fort);
+  -webkit-backdrop-filter: blur(var(--verre-flou));
+  backdrop-filter: blur(var(--verre-flou));
+  border: 1px solid var(--verre-bord);
+  box-shadow: var(--verre-ombre);
   padding: 45px 48px 50px;
 }
 
 .entry-title {
-  font-size: 34px;
-  font-weight: 700;
+  font-family: var(--police-titre);
+  font-size: var(--titre-1);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
   color: #fff;
   padding-bottom: 16px;
   border-bottom: 3px solid var(--accent);
@@ -332,8 +540,8 @@ body.accueil .galerie { margin-top: 0; }
 }
 
 .carte-contenu p {
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: var(--corps);
+  line-height: var(--interligne);
   color: var(--texte-clair);
   margin-bottom: 22px;
 }
@@ -354,8 +562,6 @@ body.accueil .galerie { margin-top: 0; }
   text-decoration-color: var(--filet-actif);
 }
 
-.carte-contenu p:last-child { margin-bottom: 0; }
-
 /* Citation (pullquote) — page Musique */
 .wp-block-pullquote {
   border-left: 4px solid rgba(255, 255, 255, .25);
@@ -367,7 +573,10 @@ body.accueil .galerie { margin-top: 0; }
 .wp-block-pullquote blockquote { text-align: center; }
 
 .wp-block-pullquote p {
-  font-size: 20px;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: clamp(22px, 2.4vw, 27px);
+  line-height: 1.35;
   color: #fff;
   margin-bottom: 18px;
 }
@@ -444,9 +653,9 @@ body.accueil .galerie { margin-top: 0; }
   padding: 26px 20px 24px;
   background: var(--footer-bar);
   color: rgba(255, 255, 255, .9);
-  font-weight: 300;
-  font-size: 15px;
-  letter-spacing: .03em;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: .02em;
   text-align: center;
   display: flex;
   align-items: center;
@@ -463,7 +672,7 @@ body.accueil .galerie { margin-top: 0; }
   padding: 5px 13px 6px;
   border: 1px solid var(--filet);
   border-radius: 999px;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--police-mono);
   font-size: 11px;
   letter-spacing: .14em;
   color: var(--texte-clair-2);
@@ -488,11 +697,12 @@ body.accueil .galerie { margin-top: 0; }
    Sur mobile, :hover reste accroché après le tap et fausse l'état des boutons. */
 @media (hover: hover) and (pointer: fine) {
   .dt-menu-trigger:hover {
-    border-color: var(--accent);
-    background: #f6f2ff;
-    box-shadow: 0 6px 22px rgba(85, 0, 232, .22);
+    border-color: var(--filet-actif);
+    background: rgba(20, 26, 32, .94);
+    box-shadow: 0 6px 22px rgba(85, 0, 232, .28);
   }
-  .dt-menu-trigger:hover span { background: var(--accent); }
+  .dt-menu-trigger:hover span { background: var(--filet-actif); }
+  .dt-main-menu li:has(a:hover)::before { color: var(--filet-actif); opacity: 1; }
 
   .dt-social-icons a:hover {
     border-color: var(--filet-actif);
@@ -507,9 +717,78 @@ body.accueil .galerie { margin-top: 0; }
   }
   .dt-footer-ai:hover i { transform: translate(2px, -2px); opacity: 1; }
 
-  .dt-main-menu li a:hover { color: var(--accent); }
+  .dt-main-menu li a:hover { color: var(--lien-survol); }
   .dt-main-menu li a:hover::after { transform: scaleX(1); }
 }
+
+/* ===== Visionneuse ===== */
+/* Créée en JS (assets/ui.js) et présente dans le DOM en permanence :
+   visibility: hidden la retire de l'ordre de tabulation tant qu'elle est fermée. */
+.visionneuse {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 10, 12, .92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s var(--courbe), visibility 0s .3s;
+}
+
+.visionneuse.ouverte {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .3s var(--courbe), visibility 0s 0s;
+}
+
+.visionneuse img {
+  max-width: min(94vw, 1400px);
+  max-height: 84vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 30px 80px -30px #000;
+}
+
+.visionneuse button {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--verre-bord);
+  background: var(--verre-fond-opaque);
+  -webkit-backdrop-filter: blur(var(--verre-flou));
+  backdrop-filter: blur(var(--verre-flou));
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe);
+}
+
+.visionneuse-fermer { top: 20px; right: 20px; }
+.visionneuse-prec,
+.visionneuse-suiv { top: 50%; margin-top: -24px; }
+.visionneuse-prec { left: 20px; }
+.visionneuse-suiv { right: 20px; }
+
+.visionneuse-legende {
+  position: absolute;
+  left: 0; right: 0; bottom: 20px;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: .06em;
+  color: var(--texte-clair-2);
+}
+
+body.visionneuse-ouverte { overflow: hidden; }
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
@@ -518,18 +797,86 @@ body.accueil .galerie { margin-top: 0; }
 
 @media (max-width: 640px) {
   .galerie { grid-template-columns: 1fr; }
-  /* background-attachment: fixed est mal géré sur iOS */
-  body {
-    background-attachment: scroll;
-    /* fond allégé : même cadrage, 53 Ko au lieu de 298 Ko (vignette générée par build-galerie.py) */
-    background-image: url('../images/mini/creation-800.webp');
-  }
-  .site-title { font-size: 21px; }
+  /* Wallpaper allégé : même cadrage, 53 Ko au lieu de 298 Ko (vignette
+     générée par build-galerie.py). */
+  .toile { background-image: url('../images/mini/creation-800.webp'); }
+  :root { --hauteur-entete: 96px; }
+  .site-title { font-size: var(--titre-2); }
   .site-header { padding-left: 16px; height: 96px; }
-  body.accueil .site-header { height: 96px; padding-top: 20px; }
-  body.accueil .galerie { margin-top: 0; }
-  #dt_breadcrumbs { padding-left: 16px; }
+  body.accueil .site-header { padding-top: 20px; }
+  #dt_breadcrumbs { padding: 16px; }
   .zone-contenu { padding: 50px 14px 70px; }
   .carte-contenu { padding: 32px 24px 40px; }
-  .entry-title { font-size: 27px; }
+}
+
+/* ===== Replis ===== */
+/* Sans backdrop-filter (anciens Firefox, navigateurs sans GPU), le verre
+   translucide laisserait le wallpaper traverser le texte : on opacifie. */
+@supports not ((backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))) {
+  .site-header,
+  body.accueil .site-header,
+  #dt_breadcrumbs,
+  .carte-contenu {
+    background: rgba(30, 38, 46, .97);
+  }
+  .dt-main-menu { background: rgba(20, 26, 32, .985); }
+}
+
+/* Navigateurs sans clip-path circulaire : on revient au fondu d'origine. */
+@supports not (clip-path: circle(0% at 0 0)) {
+  .dt-main-menu {
+    clip-path: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s, visibility 0s .25s;
+  }
+  body.menu-ouvert .dt-main-menu {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .25s, visibility 0s 0s;
+  }
+}
+
+/* Mouvement réduit : le cercle et la cascade sont des trajets, pas des états. */
+@media (prefers-reduced-motion: reduce) {
+  .dt-main-menu,
+  body.menu-ouvert .dt-main-menu {
+    clip-path: none;
+    transition: visibility 0s 0s;
+  }
+  .dt-main-menu li,
+  body.menu-ouvert .dt-main-menu li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ===== Mouvement réduit =====
+   Demande système : on garde les changements d'état, on supprime le trajet. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .galerie img { transform: none !important; }
+  .dt-main-menu,
+  body.menu-ouvert .dt-main-menu {
+    clip-path: none;
+    transition: visibility 0s 0s;
+  }
+  .dt-main-menu li,
+  body.menu-ouvert .dt-main-menu li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .js .galerie figure {
+    opacity: 1;
+    transform: none;
+  }
 }
