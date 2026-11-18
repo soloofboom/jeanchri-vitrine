@@ -63,7 +63,13 @@ def generer_miniatures(donnees: dict) -> None:
 
 def generer_item(img: dict, premiere: bool = False) -> str:
     cible = img["lien"]
-    externe = ' target="_blank" rel="noopener"' if img["externe"] else ""
+    if img["externe"]:
+        # Photo seule : la visionneuse prend le relais au clic (assets/ui.js).
+        # Le href reste l'original pleine taille, donc sans JS le lien marche
+        # encore — dégradation acceptable, on perd juste les flèches.
+        attrs = f' data-zoom="1" aria-label="Agrandir : {img["legende"]}"'
+    else:
+        attrs = ""
     if premiere:
         chargement = 'fetchpriority="high"'
     else:
@@ -73,7 +79,7 @@ def generer_item(img: dict, premiere: bool = False) -> str:
         for largeur in LARGEURS
     )
     return f"""	<figure>
-		<a href="{cible}"{externe}><img src="{img['src']}" srcset="{srcset}" sizes="{SIZES}" alt="{img['legende']}" width="{img['largeur']}" height="{img['hauteur']}" {chargement} decoding="async"></a>
+		<a href="{cible}"{attrs}><img src="{img['src']}" srcset="{srcset}" sizes="{SIZES}" alt="{img['legende']}" width="{img['largeur']}" height="{img['hauteur']}" {chargement} decoding="async"></a>
 		<figcaption>{img['legende']}</figcaption>
 	</figure>"""
 

@@ -64,9 +64,13 @@
   --corps: 16px;
   --interligne: 1.75;
   --micro: 11px;
+
+  /* Hauteur de l'en-tête, en un seul endroit : elle sert à la fois de hauteur
+     de boîte et de décalage de la galerie sur l'accueil. */
+  --hauteur-entete: 118px;
 }
 
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; background-color: #0a0a0a; }
 
 /* Grain : casse l'aplat des surfaces sombres. Au-dessus de tout pour rester
    uniforme, transparent aux clics. Couche fixe et opaque en mélange simple :
@@ -93,13 +97,20 @@ body {
   font-family: var(--police-corps);
   color: var(--texte-clair);
   letter-spacing: .01em;
-  /* Wallpaper d'origine (WordPress custom-background) */
+}
+
+/* Wallpaper : une couche fixe plutôt que background-attachment: fixed, qui
+   force un repaint plein écran à chaque frame au scroll. */
+.toile {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-color: #0a0a0a;
   background-image: url('../images/creation.jpg');
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 a { color: var(--lien); text-decoration: none; }
@@ -115,19 +126,45 @@ img { max-width: 100%; height: auto; display: block; }
   backdrop-filter: blur(var(--verre-flou));
   border-bottom: 1px solid var(--verre-bord);
   box-shadow: var(--verre-ombre);
-  height: 118px;
+  height: var(--hauteur-entete);
   padding: 30px 11px 30px 30px;
   position: relative;
   z-index: 100;
 }
 
-/* Sur l'accueil, voile léger : le wallpaper reste visible, le titre blanc reste lisible */
+/* Sur l'accueil, l'en-tête est fixé HORS FLUX. Un sticky dont la hauteur
+   changerait au scroll ferait sauter tout le contenu de 52px ; hors flux,
+   la condensation est gratuite. padding-top + marge négative restituent la
+   composition d'origine : les photos passent sous le verre. */
 body.accueil .site-header {
-  position: absolute;
+  position: fixed;
   top: 0; left: 0; right: 0;
+  overflow: hidden;
   background: var(--verre-fond-leger);
   -webkit-backdrop-filter: blur(var(--verre-flou-leger));
   backdrop-filter: blur(var(--verre-flou-leger));
+  transition: height .3s var(--courbe),
+              padding .3s var(--courbe),
+              background-color .3s var(--courbe);
+}
+
+body.accueil { padding-top: var(--hauteur-entete); }
+
+body.accueil .galerie { margin-top: calc(-1 * var(--hauteur-entete)); }
+
+body.accueil .site-header.condense {
+  height: 68px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background: var(--verre-fond);
+}
+
+body.accueil .site-header.condense .site-title { font-size: 21px; }
+
+body.accueil .site-description { transition: opacity .2s var(--courbe); }
+
+body.accueil .site-header.condense .site-description {
+  display: none;
 }
 
 body.accueil .site-title { font-weight: 400; }
@@ -377,6 +414,7 @@ body.menu-ouvert { overflow: hidden; }
 .galerie figure {
   position: relative;
   margin: 0;
+  overflow: hidden;
 }
 
 .galerie a { display: block; }
@@ -386,30 +424,48 @@ body.menu-ouvert { overflow: hidden; }
   height: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  transition: transform .7s var(--courbe);
 }
 
 .galerie figcaption {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  padding: 12px 14px;
-  background: var(--overlay);
+  padding: 34px 14px 14px;
+  /* dégradé plutôt qu'un aplat violet : la légende se pose sur la photo
+     au lieu de la barrer */
+  background: linear-gradient(to top, rgba(10, 12, 14, .86), rgba(10, 12, 14, 0));
   color: #fff;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: .02em;
   text-align: center;
   opacity: 0;
-  transition: opacity .3s;
+  transform: translateY(8px);
+  transition: opacity .35s var(--courbe), transform .35s var(--courbe);
+}
+
+/* Révélation au scroll. L'état caché n'est posé que si le JS a tourné (classe
+   .js sur <html>), sinon la galerie resterait invisible sans JS. */
+.js .galerie figure {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .7s var(--courbe), transform .7s var(--courbe);
+}
+
+.js .galerie figure.visible {
+  opacity: 1;
+  transform: none;
 }
 
 .galerie figure:hover figcaption,
 .galerie a:focus-visible figcaption,
 .galerie figure:focus-within figcaption {
   opacity: 1;
+  transform: none;
 }
 
 @media (hover: none) {
-  .galerie figcaption { opacity: 1; }
+  .galerie figcaption { opacity: 1; transform: none; }
 }
 
 /* ===== Pages internes ===== */
@@ -665,6 +721,75 @@ body.menu-ouvert { overflow: hidden; }
   .dt-main-menu li a:hover::after { transform: scaleX(1); }
 }
 
+/* ===== Visionneuse ===== */
+/* Créée en JS (assets/ui.js) et présente dans le DOM en permanence :
+   visibility: hidden la retire de l'ordre de tabulation tant qu'elle est fermée. */
+.visionneuse {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 10, 12, .92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s var(--courbe), visibility 0s .3s;
+}
+
+.visionneuse.ouverte {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .3s var(--courbe), visibility 0s 0s;
+}
+
+.visionneuse img {
+  max-width: min(94vw, 1400px);
+  max-height: 84vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 30px 80px -30px #000;
+}
+
+.visionneuse button {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--verre-bord);
+  background: var(--verre-fond-opaque);
+  -webkit-backdrop-filter: blur(var(--verre-flou));
+  backdrop-filter: blur(var(--verre-flou));
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe);
+}
+
+.visionneuse-fermer { top: 20px; right: 20px; }
+.visionneuse-prec,
+.visionneuse-suiv { top: 50%; margin-top: -24px; }
+.visionneuse-prec { left: 20px; }
+.visionneuse-suiv { right: 20px; }
+
+.visionneuse-legende {
+  position: absolute;
+  left: 0; right: 0; bottom: 20px;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: .06em;
+  color: var(--texte-clair-2);
+}
+
+body.visionneuse-ouverte { overflow: hidden; }
+
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
   .galerie { grid-template-columns: repeat(2, 1fr); }
@@ -672,12 +797,10 @@ body.menu-ouvert { overflow: hidden; }
 
 @media (max-width: 640px) {
   .galerie { grid-template-columns: 1fr; }
-  /* background-attachment: fixed est mal géré sur iOS */
-  body {
-    background-attachment: scroll;
-    /* fond allégé : même cadrage, 53 Ko au lieu de 298 Ko (vignette générée par build-galerie.py) */
-    background-image: url('../images/mini/creation-800.webp');
-  }
+  /* Wallpaper allégé : même cadrage, 53 Ko au lieu de 298 Ko (vignette
+     générée par build-galerie.py). */
+  .toile { background-image: url('../images/mini/creation-800.webp'); }
+  :root { --hauteur-entete: 96px; }
   .site-title { font-size: var(--titre-2); }
   .site-header { padding-left: 16px; height: 96px; }
   body.accueil .site-header { padding-top: 20px; }
@@ -741,4 +864,19 @@ body.menu-ouvert { overflow: hidden; }
     scroll-behavior: auto !important;
   }
   .galerie img { transform: none !important; }
+  .dt-main-menu,
+  body.menu-ouvert .dt-main-menu {
+    clip-path: none;
+    transition: visibility 0s 0s;
+  }
+  .dt-main-menu li,
+  body.menu-ouvert .dt-main-menu li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .js .galerie figure {
+    opacity: 1;
+    transform: none;
+  }
 }
