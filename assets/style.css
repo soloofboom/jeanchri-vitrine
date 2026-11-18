@@ -49,6 +49,21 @@
                  0 18px 48px -24px rgba(0, 0, 0, .65);
   /* bruit fractal : casse l'aplat des surfaces sombres (voir body::after) */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* ===== Echelle typographique =====
+     Roboto couvrait 300->900 et servait a tout : aucune hierarchie, et un
+     letter-spacing de .06em pose sur du texte courant. Trois familles,
+     trois roles. Instrument Serif n'a qu'un poids : la hierarchie passe
+     par le corps et la casse, pas par la graisse. */
+  --police-titre: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --police-corps: "Inter", "Roboto", system-ui, -apple-system, sans-serif;
+  --police-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --titre-1: clamp(32px, 4vw, 44px);     /* h1 de page */
+  --titre-2: clamp(21px, 2.2vw, 28px);   /* titre du site */
+  --titre-menu: clamp(26px, 3vw, 34px);  /* entrees de menu */
+  --corps: 16px;
+  --interligne: 1.75;
+  --micro: 11px;
 }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -75,9 +90,9 @@ body::after {
 }
 
 body {
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: var(--police-corps);
   color: var(--texte-clair);
-  letter-spacing: .06em;
+  letter-spacing: .01em;
   /* Wallpaper d'origine (WordPress custom-background) */
   background-color: #0a0a0a;
   background-image: url('../images/creation.jpg');
@@ -117,20 +132,26 @@ body.accueil .site-header {
 
 body.accueil .site-title { font-weight: 400; }
 
+body.accueil .site-title { font-weight: 400; }
+
 .site-title {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: var(--police-titre);
+  font-size: var(--titre-2);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
 }
 
 .site-title a { color: #fff; }
 .site-title a:hover { color: var(--lien-survol); }
 
 .site-description {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: .09em;
+  text-transform: uppercase;
   color: var(--texte-clair-2);
-  margin-top: 2px;
+  margin-top: 5px;
 }
 
 /* ===== Menu (burger) ===== */
@@ -195,8 +216,10 @@ body.menu-ouvert .dt-main-menu { opacity: 1; visibility: visible; }
   position: relative;
   display: inline-block;
   padding: 2px 0;
-  font-size: 26px;
-  font-weight: 500;
+  font-family: var(--police-titre);
+  font-size: var(--titre-menu);
+  font-weight: 400;
+  letter-spacing: 0;
   color: var(--texte-clair);
   transition: color var(--duree) var(--courbe);
 }
@@ -232,7 +255,7 @@ body.menu-ouvert { overflow: hidden; }
   padding: 6px 15px 7px;
   border: 1px solid var(--filet);
   border-radius: 999px;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--police-mono);
   font-size: 12px;
   font-weight: 400;
   letter-spacing: .2em;
@@ -288,8 +311,9 @@ body.menu-ouvert { overflow: hidden; }
   padding: 12px 14px;
   background: var(--overlay);
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
+  letter-spacing: .02em;
   text-align: center;
   opacity: 0;
   transition: opacity .3s;
@@ -327,7 +351,7 @@ body.menu-ouvert { overflow: hidden; }
   max-width: 1100px;
   margin: 0 auto;
   list-style: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -365,8 +389,11 @@ body.menu-ouvert { overflow: hidden; }
 }
 
 .entry-title {
-  font-size: 34px;
-  font-weight: 700;
+  font-family: var(--police-titre);
+  font-size: var(--titre-1);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
   color: #fff;
   padding-bottom: 16px;
   border-bottom: 3px solid var(--accent);
@@ -374,8 +401,8 @@ body.menu-ouvert { overflow: hidden; }
 }
 
 .carte-contenu p {
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: var(--corps);
+  line-height: var(--interligne);
   color: var(--texte-clair);
   margin-bottom: 22px;
 }
@@ -407,7 +434,10 @@ body.menu-ouvert { overflow: hidden; }
 .wp-block-pullquote blockquote { text-align: center; }
 
 .wp-block-pullquote p {
-  font-size: 20px;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: clamp(22px, 2.4vw, 27px);
+  line-height: 1.35;
   color: #fff;
   margin-bottom: 18px;
 }
@@ -484,9 +514,9 @@ body.menu-ouvert { overflow: hidden; }
   padding: 26px 20px 24px;
   background: var(--footer-bar);
   color: rgba(255, 255, 255, .9);
-  font-weight: 300;
-  font-size: 15px;
-  letter-spacing: .03em;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: .02em;
   text-align: center;
   display: flex;
   align-items: center;
@@ -503,7 +533,7 @@ body.menu-ouvert { overflow: hidden; }
   padding: 5px 13px 6px;
   border: 1px solid var(--filet);
   border-radius: 999px;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--police-mono);
   font-size: 11px;
   letter-spacing: .14em;
   color: var(--texte-clair-2);
@@ -564,13 +594,12 @@ body.menu-ouvert { overflow: hidden; }
     /* fond allégé : même cadrage, 53 Ko au lieu de 298 Ko (vignette générée par build-galerie.py) */
     background-image: url('../images/mini/creation-800.webp');
   }
-  .site-title { font-size: 21px; }
+  .site-title { font-size: var(--titre-2); }
   .site-header { padding-left: 16px; height: 96px; }
   body.accueil .site-header { padding-top: 20px; }
   #dt_breadcrumbs { padding: 16px; }
   .zone-contenu { padding: 50px 14px 70px; }
   .carte-contenu { padding: 32px 24px 40px; }
-  .entry-title { font-size: 27px; }
 }
 
 /* ===== Replis ===== */
