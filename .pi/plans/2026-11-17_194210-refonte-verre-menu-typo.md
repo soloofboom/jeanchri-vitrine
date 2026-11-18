@@ -1,9 +1,10 @@
 # Refonte design jeanchri.com — verre dépoli raffiné, menu enrichi, typographie display
 
 **Goal**: Porter le site d'une reproduction fidèle du thème WordPress Photobook à une interface cohérente et finie, en conservant l'ADN sombre/translucide.
-**Status**: draft
+**Status**: done
 **Created**: 2026-11-17 19:42
 **Slug**: refonte-verre-menu-typo
+**Branch**: `design/verre-2026-11` (7 commits, non poussée)
 
 ## Context
 
@@ -213,6 +214,63 @@ Aucun framework de test dans le repo — la validation est manuelle et scriptée
 - **Header sticky sur l'accueil** : moyenne × moyen — l'accueil repose aujourd'hui sur une photo pleine page ; un header permanent réduit l'effet hero. Mitigation : condensation agressive (titre 22 px) et fond quasi transparent au repos.
 - **Cache-busting automatique** : faible × moyen — un hash dans 4 fichiers crée des conflits de merge avec le clone parallèle. Mitigation : le clone `~/jeanchri.com/site` a été supprimé le 2026-11-17, il ne reste qu'un checkout.
 - **Retrait de `background-attachment: fixed`** : faible × moyen — si le `div.toile` est mal empilé, le wallpaper disparaît ou passe devant le contenu. Mitigation : `z-index: -1` + `isolation: isolate` sur `body`, vérification visuelle avant commit.
+
+## Journal d'exécution — écarts au plan
+
+Toutes les phases ont été exécutées. Les écarts, tous délibérés :
+
+1. **Cascade du menu via `:nth-child` et non `style="--i"` dans le HTML** (étape 17).
+   Même résultat, markup inchangé, rien à resynchroniser entre 4 fichiers.
+2. **Numérotation dans une colonne de grille sur le `<li>`, pas en `::before` du `<a>`** (étape 18).
+   Dans le `<a>` centré, les numéros flottaient (664 / 668 / 596 px) et le
+   soulignement les traversait. Il a fallu en plus `width: max-content` sur le
+   `ul` (sinon chaque `li` recentre sa propre colonne) et `justify-self: start`
+   sur le `<a>` (sinon il s'étire et le soulignement déborde).
+3. **En-tête de l'accueil en `position: fixed`, pas `sticky`** (étape 20).
+   Un sticky dont la hauteur passe de 118 à 68 px fait sauter tout le contenu
+   de 52 px au scroll. Hors flux, la condensation est gratuite, et
+   `padding-top` + marge négative restituent la composition d'origine (les
+   photos passent sous le verre).
+4. **Ajout d'un `assets/ui.js`** (non prévu). Il porte la condensation de
+   l'en-tête, la révélation au scroll et la visionneuse. `menu.js` reste
+   strictement le menu.
+5. **Visionneuse ajoutée** (question ouverte tranchée : oui). Construite en DOM,
+   pas en `innerHTML`, pour éviter une surface XSS.
+6. **`--check` réparé au-delà du plan.** Il comparait des `mtime`, donc tout
+   clone frais échouait sur les 9 miniatures (constaté dès la phase 0). Il
+   compare désormais l'empreinte SHA-256 du **contenu** des originaux, mémorisée
+   dans `images/mini/.manifeste.json`. Vérifié en antidatant les originaux à l'an 2000.
+7. **`<main>` ajouté** (hors plan, trouvé par axe-core) : `landmark-one-main`
+   et `region` en modéré. Sur l'accueil le `<main>` est posé **hors** des
+   marqueurs `GALERIE:DEBUT/FIN` pour survivre aux régénérations.
+8. **`preload` des polices abandonné** : les URLs `.woff2` de Google Fonts sont
+   versionnées et instables, un preload casserait à chaque mise à jour côté
+   Google. `preconnect` + `display=swap` conservés.
+9. **Polices auto-hébergées : non.** Google Fonts conservé (zéro binaire dans le
+   repo). Conséquence : Semgrep signale l'absence d'`integrity` sur le `<link>`,
+   ce qui est un faux positif — le CSS servi est dynamique par navigateur,
+   aucun hash SRI stable n'existe.
+10. **Image de partage** : `creation.jpg` (recadrage centré 1200×630, 174 Ko).
+
+### Validation finale
+
+- `python3 build-galerie.py --check` → 0, y compris après antidatage des originaux.
+- **axe-core** (wcag2a/2aa/21a/21aa + best-practice) : **0 violation toutes
+  sévérités** sur les 4 pages et menu ouvert (2 modérées avant l'étape `<main>`).
+- Focus trap du menu : 8 Tab + 6 Shift+Tab, **0 fuite**, `inert` posé puis retiré,
+  focus rendu au burger sur Escape.
+- Visionneuse : ouverture, flèches, Escape, focus rendu à la tuile, 0 erreur console.
+- `prefers-reduced-motion` : galerie et menu visibles immédiatement, pas de cercle.
+- Sans JS : 9 figures visibles, 9 liens cliquables, wallpaper présent.
+- 390 px : `scrollWidth 390` sur les 4 pages, aucun débordement horizontal.
+- En-tête : galerie à `y=0` (photos sous le verre), 118 → 68 px sans reflow.
+
+### Questions ouvertes restantes
+
+- `portfolio/` est toujours une page vide (« No items were found… »), non listée
+  dans le menu mais présente dans le `sitemap.xml`. À masquer (`noindex`) ou à remplir.
+- Les polices restent une requête tierce bloquante via `preconnect` seule.
+- Le déploiement (merge sur `main` + push) n'a pas été fait.
 
 ## Open Questions
 
