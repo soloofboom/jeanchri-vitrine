@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Roboto:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=501f703d">
+<link rel="stylesheet" href="../assets/style.css?v=4baf371c">
 <script>document.documentElement.classList.add("js");</script>
 </head>
 <body class="page-inner page page-id-147">
@@ -54,6 +54,18 @@
 <button class="dt-menu-trigger" aria-label="Ouvrir le menu" aria-expanded="false">
 	<span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
 </button>
+<!-- mini-lecteur -->
+<div class="mini-lecteur" data-lecteur>
+	<button class="mini-lecteur__bouton" type="button" data-lecteur="lecture" aria-label="Lecture" aria-pressed="false">
+		<svg class="icone-lecture" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+		<svg class="icone-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+	</button>
+	<button class="mini-lecteur__bouton" type="button" data-lecteur="suivant" aria-label="Piste suivante">
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+	</button>
+	<span class="mini-lecteur__video" data-lecteur-video aria-hidden="true"></span>
+</div>
+<!-- /mini-lecteur -->
 
 <div class="bandeau-page" role="presentation"></div>
 
@@ -121,5 +133,6 @@
 
 <script src="../assets/menu.js?v=3573da1d"></script>
 <script src="../assets/ui.js?v=62c20a21"></script>
+<script src="../assets/lecteur.js?v=ccc14c1f"></script>
 </body>
 </html>

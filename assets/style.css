@@ -617,16 +617,73 @@ body.menu-ouvert { overflow: hidden; }
   border: 0;
 }
 
-/* Lecteur Apple Music — hauteur fixe imposée par Apple, pleine largeur de la carte */
-.embarquement-musique {
-  margin: 34px 0;
+/* Mini-lecteur — collé à gauche du bouton de menu, présent sur toutes les pages */
+.mini-lecteur {
+  position: fixed;
+  top: 20px;
+  right: 80px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 5px;
+  background: var(--verre-fond-opaque);
+  -webkit-backdrop-filter: blur(var(--verre-flou));
+  backdrop-filter: blur(var(--verre-flou));
+  border: 1px solid var(--verre-bord);
+  box-shadow: var(--verre-ombre);
+  border-radius: 2px;
+  z-index: 190; /* sous le menu plein écran (200) */
 }
 
-.embarquement-musique iframe {
-  display: block;
-  width: 100%;
-  height: 450px;
+.mini-lecteur__bouton {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
   border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--duree) var(--courbe);
+}
+
+.mini-lecteur__bouton:hover { background: rgba(255, 255, 255, .14); }
+
+.mini-lecteur__bouton:focus-visible {
+  outline: 2px solid var(--filet-actif);
+  outline-offset: 2px;
+}
+
+.mini-lecteur__bouton svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* L'iframe YouTube remplace le conteneur : quoi qu'il arrive, elle reste invisible. */
+.mini-lecteur__video,
+.mini-lecteur__video iframe {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  border: 0;
+  pointer-events: none;
+}
+
+/* Icône pause affichée seulement quand la lecture est en cours */
+.mini-lecteur__bouton .icone-pause { display: none; }
+.mini-lecteur__bouton.est-en-lecture .icone-pause { display: block; }
+.mini-lecteur__bouton.est-en-lecture .icone-lecture { display: none; }
+
+@media (max-width: 520px) {
+  .mini-lecteur { right: 76px; height: 44px; padding: 0 3px; }
+  .mini-lecteur__bouton { width: 34px; height: 34px; }
+  .mini-lecteur__bouton svg { width: 13px; height: 13px; }
 }
 
 .message-vide {
@@ -834,8 +891,9 @@ body.visionneuse-ouverte { overflow: hidden; }
   :root { --hauteur-entete: 96px; }
   /* Le titre est en Roboto 700, bien plus large que le serif : sans la
      reserve a droite il passait sous le burger. Avec, il passe a la ligne
-     sur les petits ecrans (390px) et tient sur une ligne au-dela de ~426px. */
-  .site-header { padding-left: 16px; padding-right: 84px; height: auto; }
+     sur les petits ecrans (390px) et tient sur une ligne au-dela de ~426px.
+     La reserve couvre aussi le mini-lecteur (burger + pastille). */
+  .site-header { padding-left: 16px; padding-right: 158px; height: auto; }
   body.accueil .site-header { padding-top: 20px; }
   #dt_breadcrumbs { padding: 16px; }
   .site-title { font-size: 20px; }
