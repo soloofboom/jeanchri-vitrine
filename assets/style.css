@@ -601,6 +601,18 @@ body.menu-ouvert { overflow: hidden; }
   border: 0;
 }
 
+/* Lecteur Apple Music — hauteur fixe imposée par Apple, pleine largeur de la carte */
+.embarquement-musique {
+  margin: 34px 0;
+}
+
+.embarquement-musique iframe {
+  display: block;
+  width: 100%;
+  height: 450px;
+  border: 0;
+}
+
 .message-vide {
   font-size: 15px;
   color: var(--texte-clair-2);
@@ -643,6 +655,13 @@ body.menu-ouvert { overflow: hidden; }
 .dt-social-icons svg {
   width: 17px; height: 17px;
   fill: currentColor;
+}
+
+/* GitHub garde le cercle commun mais passe en mauve : c'est le seul profil
+   de code, on le distingue des réseaux sociaux. */
+.dt-social-icons a.dt-social-github {
+  color: var(--mauve-ai);
+  border-color: rgba(201, 168, 255, .5);
 }
 
 .dt-footer-bar {
