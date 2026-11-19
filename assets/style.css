@@ -60,10 +60,10 @@
   --police-mono: ui-monospace, "SF Mono", Menlo, monospace;
   /* titre du site : Roboto 700 conservé d'avant la refonte, à la demande */
   --police-entete: "Roboto", "Inter", system-ui, -apple-system, sans-serif;
-  /* mauve de la terminaison « .com » dans le menu */
-  --mauve: #c9a8ff;
+  /* mauve du logotype « AI » dans le menu */
+  --mauve-ai: #c9a8ff;
   --titre-1: clamp(32px, 4vw, 44px);     /* h1 de page */
-  --titre-menu: clamp(32px, 4vw, 46px);  /* entrees de menu */
+  --titre-menu: clamp(26px, 3vw, 34px);  /* entrees de menu */
   --corps: 16px;
   --interligne: 1.75;
   --micro: 11px;
@@ -364,16 +364,19 @@ body.menu-ouvert .dt-main-menu li a[aria-current="page"] { color: var(--filet-ac
 
 body.menu-ouvert { overflow: hidden; }
 
-/* signature du site : le domaine, sous un filet de séparation. */
+/* entrée de sortie : l'alibi ai.jeanchri.com, autre site */
 .dt-main-menu li.menu-sortie {
   margin-top: 30px;
   padding-top: 26px;
   border-top: 1px solid var(--filet);
 }
 
-/* Lien textuel « jeanChri.com » : seul le « .com » porte la couleur. */
+/* Sortie vers ai.jeanchri.com : plus de pastille monospace, un vrai lien
+   textuel « jeanChri AI ↗ » dont seul le « AI » porte la couleur. */
 .dt-main-menu li.menu-sortie a {
-  display: inline-block;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 11px;
   padding: 4px 0;
   border: 0;
   background: none;
@@ -387,16 +390,29 @@ body.menu-ouvert { overflow: hidden; }
 
 .dt-main-menu li.menu-sortie .menu-marque { color: inherit; }
 
-.dt-main-menu li.menu-sortie .menu-ext {
-  color: var(--mauve);
+/* « AI » est mis en evidence par la couleur ET par la taille : a taille egale
+   il se lisait comme la fin du mot. */
+.dt-main-menu li.menu-sortie .menu-ai {
+  color: var(--mauve-ai);
+  font-size: 1.2em;
+  letter-spacing: .05em;
   transition: color var(--duree) var(--courbe);
 }
 
 .dt-main-menu li.menu-sortie a::after { display: none; }
 
+.dt-main-menu li.menu-sortie a i {
+  font-style: normal;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--mauve-ai);
+  transition: transform var(--duree) var(--courbe);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .dt-main-menu li.menu-sortie a:hover { color: #fff; }
-  .dt-main-menu li.menu-sortie a:hover .menu-ext { color: #e6d9ff; }
+  .dt-main-menu li.menu-sortie a:hover .menu-ai { color: #e6d9ff; }
+  .dt-main-menu li.menu-sortie a:hover i { transform: translate(2px, -2px); }
 }
 
 /* ===== Galerie accueil ===== */
